@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
+//e
 @TeleOp(name = "gaming", group = "gamings")
 public class MainTeleOp extends OpMode {
     float yPower = 0;
