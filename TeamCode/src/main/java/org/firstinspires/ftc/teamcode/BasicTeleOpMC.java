@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Basic Motion Controller
@@ -10,8 +11,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  */
 @TeleOp(name = "BasicMotionController", group = "idk")
 public class BasicTeleOpMC extends LinearOpMode {
-    float yPower = 0;
-    float xPower = 0;
+
+    ElapsedTime DPadPressedTime = new ElapsedTime();
+    boolean wasDPadPressed = false;
+    float forward = 0;
+    float strafe = 0;
+
+    float turn = 0;
 
     DcMotor FrontLeft;
     DcMotor FrontRight;
@@ -27,9 +33,33 @@ public class BasicTeleOpMC extends LinearOpMode {
 
         waitForStart();
 
-        if(opModeIsActive()){
+        while(opModeIsActive()){
 
         }
+    }
+
+    /**
+     * Check Input
+     */
+    public void inputCheck(){
+        if(gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up)
+            dPadPressed();
+    }
+
+    /**
+     * Activates when DPad is pressed (add the ability to layer DPad entries)
+     */
+    public void dPadPressed(){
+        DPadPressedTime.reset();
+        wasDPadPressed = true;
+    }
+
+    public void nonDPad(){
+        wasDPadPressed = false;
+    }
+
+    public boolean isDPadMotion(){
+        return (DPadPressedTime.milliseconds() <= 1000 && wasDPadPressed);
     }
 
     /**
