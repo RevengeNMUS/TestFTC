@@ -10,10 +10,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Takes Joystick and DPad input, and moves the robot accordingly
  *
  * To-Do:
- * Add DPad layering
- * General Polishing
+ * Debuging (get android studio fixed) and General Polishing
  * More efficient DPad checking?
- * More methods to make more readable and nicer
  *
  */
 @TeleOp(name = "BasicMotionController", group = "idk")
@@ -22,19 +20,19 @@ public class BasicTeleOpMC extends LinearOpMode {
     /**
      * Vector-like class that houses not only x and y but also rotation
      */
-    private class DSR{
-        public double drive;
-        public double strafe;
-        public double rotate;
+    private class DriveMotion {
+        public final double drive;
+        public final double strafe;
+        public final double rotate;
+        public static final DriveMotion ZERO = new DriveMotion(0, 0, 0);
 
-        public static final DSR EMPTY_DSR = new DSR(0, 0, 0)
-        public DSR(double d, double s, double r) {
-            drive = d;
-            strafe = s;
-            rotate = r;
-        }
-
-        public setDSR(double d, double s, double r){
+        /**
+         * Use constructor to define vars of this DriveMotion
+         * @param d amount of forward movement
+         * @param s amount of strafing
+         * @param r amount of rotation (correlate this to smth, angles, radians, whatever)
+         */
+        public DriveMotion (double d, double s, double r) {
             drive = d;
             strafe = s;
             rotate = r;
@@ -42,37 +40,37 @@ public class BasicTeleOpMC extends LinearOpMode {
     }
 
     //Used to check if 1 second of DPad movement is up
-    ElapsedTime DPadPressedTime = new ElapsedTime();
+    ElapsedTime dPadTimer = new ElapsedTime();
+
+    private int dPadMovementTime = 1000;
 
     //Used to check if the current movement is beceause or not because of DPad movement
     boolean wasDPadPressed = false;
-    //
 
-    //current DSR
-    DSR drive_strafe_rotate = new DSR(0, 0, 0);
+    //current motion
+    DriveMotion motion = DriveMotion.ZERO;
 
-    DcMotor FrontLeft;
-    DcMotor FrontRight;
-    DcMotor BackLeft;
-    DcMotor BackRight;
+    DcMotor frontLeft;
+    DcMotor frontRight;
+    DcMotor backLeft;
+    DcMotor backRight;
 
     @Override
-    public void runOpMode(){
-        FrontLeft = hardwareMap.get(DcMotor.class, "front_left_drive");
-        FrontRight = hardwareMap.get(DcMotor.class, "front_right_drive");
-        BackLeft = hardwareMap.get(DcMotor.class, "back_left_drive");
-        BackRight = hardwareMap.get(DcMotor.class, "back_right_drive");
+    public void runOpMode() {
+        frontLeft = hardwareMap.get(DcMotor.class, "front_left_drive");
+        frontRight = hardwareMap.get(DcMotor.class, "front_right_drive");
+        backLeft = hardwareMap.get(DcMotor.class, "back_left_drive");
+        backRight = hardwareMap.get(DcMotor.class, "back_right_drive");
 
         waitForStart();
 
         while(opModeIsActive()){
-            move(inputCheck(drive_strafe_rotate));
+            move(inputCheck(motion));
         }
     }
 
     /**
      * Check Input
-     * (ADD ROTATION YOU DOUGHNUT)
      *
      * Input Prefrence:
      * Button - Top Priority, if button is pressed then all other input is not considered
@@ -80,68 +78,57 @@ public class BasicTeleOpMC extends LinearOpMode {
      * Previous Button Press - Third Priority
      * Nothing - Causes Robot to stop motion
      */
-    public DSR inputCheck(DSR current_dsr){
+    public DriveMotion inputCheck(DriveMotion current_motion){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
+        //assuming you cant turn during movement using dpad
         if(gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up) {
-            dPadPressed();
-            //Doesnt seem efficient
+            dPadMovementTime += 1000;
+            wasDPadPressed = true;
+
+            //Following doesnt seem efficient, revise
             //add rotation via right joystick
-            if(gamepad1.dpad_down) {
-                current_dsr.setDSR(-0.5, 0, 0)
-                return new DSR(-0.5, 0, 0);
+            if (gamepad1.dpad_down) {
+                current_motion = new DriveMotion(-0.5, 0, 0);
             }
-            if(gamepad1.dpad_up) {
-                current_dsr.setDSR(0.5, 0, 0)
-                return new DSR(0.5, 0, 0);
+            if (gamepad1.dpad_up) {
+                current_motion = new DriveMotion(0.5, 0, 0);
             }
-            if(gamepad1.dpad_right) {
-                current_dsr.setDSR(0, 0.5, 0)
-                return new DSR(0, 0.5, 0);
+            if (gamepad1.dpad_right) {
+                current_motion = new DriveMotion(0, 0.5, 0);
             }
-            if(gamepad1.dpad_left) {
-                current_dsr.setDSR(0, -0.5, 0)
-                return new DSR(0, -0.5, 0);
+            if (gamepad1.dpad_left) {
+                current_motion = new DriveMotion(0, -0.5, 0);
             }
 
+            return current_motion;
         }
 
         //joystick check
-        if(gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0){
-            nonDPad();
-            return new DSR(gamepad1.right_stick_y, gamepad1.left_stick_y, 0)
+        if (gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0) {
+            wasDPadPressed = false;
+            dPadMovementTime = 1000;
+            current_motion = new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x)
+            return current_motion;
         }
 
         //if the current motion is because of a previous dPad press and the one second is not up, continue current motion
-        if(isDPadMotion()) {
-            return current_dsr;
+        if (isDPadMotion()) {
+            return current_motion;
         }
 
-        current_dsr.setDSR(0, 0, 0);
-        return DSR.EMPTY_DSR;
-    }
-
-    /**
-     * DPad Input (Resets a one second timer, sets wasDPadPressed to true)
-     * Activates when DPad is pressed (add the ability to layer DPad entries)
-     */
-    public void dPadPressed(){
-        DPadPressedTime.reset();
-        wasDPadPressed = true;
-    }
-
-    /**
-     * Non-DPad input
-     */
-    public void nonDPad(){
-        wasDPadPressed = false;
+        current_motion = DriveMotion.ZERO;
+        return DriveMotion.ZERO;
     }
 
     /**
      * Checks if current motion is because of previous DPad input
-     * @return whether current motion was caused by previous input
+     * @return Whether current motion was caused by previous input
      */
     public boolean isDPadMotion(){
-        wasDPadPressed = wasDPadPressed && DPadPressedTime.milliseconds() <= 1000;
+        wasDPadPressed = wasDPadPressed && DPadPressedTime.milliseconds() <= dPadMovementTime;
+        if (!wasDPadPressed) {
+            dPadMovementTime = 1000;
+        }
         return wasDPadPressed;
     }
 
@@ -152,7 +139,7 @@ public class BasicTeleOpMC extends LinearOpMode {
      * @param forwardMotion Amount of forward motion
      * @param turnVal Amount of turning (figure out how to add angle or radian or some actual unit to this)
      */
-    public void move(float strafeVal, float forwardMotion, float turnVal){
+    public void move(double strafeVal, double forwardMotion, double turnVal){
         FrontLeft.setPower(forwardMotion - strafeVal + turnVal);
         FrontRight.setPower(forwardMotion + strafeVal - turnVal);
         BackLeft.setPower(forwardMotion + strafeVal + turnVal);
@@ -164,7 +151,7 @@ public class BasicTeleOpMC extends LinearOpMode {
      *
      * @param dsr the drive strafe rotation for movement
      */
-    public void move(DSR dsr){
+    public void move(DriveMotion dsr){
         FrontLeft.setPower(dsr.drive - dsr.strafe + dsr.rotate);
         FrontRight.setPower(dsr.drive + dsr.strafe - dsr.rotate);
         BackLeft.setPower(dsr.drive + dsr.strafe + dsr.rotate);
