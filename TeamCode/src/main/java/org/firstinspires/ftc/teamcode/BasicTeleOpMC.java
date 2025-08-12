@@ -17,27 +17,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "BasicMotionController", group = "idk")
 public class BasicTeleOpMC extends LinearOpMode {
 
-    /**
-     * Vector-like class that houses not only x and y but also rotation
-     */
-    private class DriveMotion {
-        public final double drive;
-        public final double strafe;
-        public final double rotate;
-        public static final DriveMotion ZERO = new DriveMotion(0, 0, 0);
-
-        /**
-         * Use constructor to define vars of this DriveMotion
-         * @param d amount of forward movement
-         * @param s amount of strafing
-         * @param r amount of rotation (correlate this to smth, angles, radians, whatever)
-         */
-        public DriveMotion (double d, double s, double r) {
-            drive = d;
-            strafe = s;
-            rotate = r;
-        }
-    }
 
     //Used to check if 1 second of DPad movement is up
     ElapsedTime dPadTimer = new ElapsedTime();
@@ -107,7 +86,7 @@ public class BasicTeleOpMC extends LinearOpMode {
         if (gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0) {
             wasDPadPressed = false;
             dPadMovementTime = 1000;
-            current_motion = new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x)
+            current_motion = new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             return current_motion;
         }
 
@@ -117,7 +96,7 @@ public class BasicTeleOpMC extends LinearOpMode {
         }
 
         current_motion = DriveMotion.ZERO;
-        return DriveMotion.ZERO;
+        return current_motion;
     }
 
     /**
@@ -125,25 +104,11 @@ public class BasicTeleOpMC extends LinearOpMode {
      * @return Whether current motion was caused by previous input
      */
     public boolean isDPadMotion(){
-        wasDPadPressed = wasDPadPressed && DPadPressedTime.milliseconds() <= dPadMovementTime;
+        wasDPadPressed = wasDPadPressed && dPadTimer.milliseconds() <= dPadMovementTime;
         if (!wasDPadPressed) {
             dPadMovementTime = 1000;
         }
         return wasDPadPressed;
-    }
-
-    /**
-     * Used to move the robot based on strafe, forward motion, and turning
-     *
-     * @param strafeVal Amount of sideways motion
-     * @param forwardMotion Amount of forward motion
-     * @param turnVal Amount of turning (figure out how to add angle or radian or some actual unit to this)
-     */
-    public void move(double strafeVal, double forwardMotion, double turnVal){
-        FrontLeft.setPower(forwardMotion - strafeVal + turnVal);
-        FrontRight.setPower(forwardMotion + strafeVal - turnVal);
-        BackLeft.setPower(forwardMotion + strafeVal + turnVal);
-        BackRight.setPower(forwardMotion - strafeVal - turnVal);
     }
 
     /**
@@ -152,9 +117,9 @@ public class BasicTeleOpMC extends LinearOpMode {
      * @param dsr the drive strafe rotation for movement
      */
     public void move(DriveMotion dsr){
-        FrontLeft.setPower(dsr.drive - dsr.strafe + dsr.rotate);
-        FrontRight.setPower(dsr.drive + dsr.strafe - dsr.rotate);
-        BackLeft.setPower(dsr.drive + dsr.strafe + dsr.rotate);
-        BackRight.setPower(dsr.drive - dsr.strafe - dsr.rotate);
+        frontLeft.setPower(dsr.drive - dsr.strafe + dsr.rotate);
+        frontRight.setPower(dsr.drive + dsr.strafe - dsr.rotate);
+        backLeft.setPower(dsr.drive + dsr.strafe + dsr.rotate);
+        backRight.setPower(dsr.drive - dsr.strafe - dsr.rotate);
     }
 }
