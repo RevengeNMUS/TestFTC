@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  *
  * To-Do:
  * Debuging (get android studio fixed) and General Polishing
- * More efficient DPad checking?
  * X button input
  * More descriptive description (¯\_(ツ)_/¯)
  * Make sure you didnt goof on any of the code you bagel
