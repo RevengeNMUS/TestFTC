@@ -3,32 +3,32 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Basic Motion Controller
  * Takes Joystick and DPad input, and moves the robot accordingly
+ * Allows stacking of DPad input
  *
  * To-Do:
  * Debuging (get android studio fixed) and General Polishing
  * More efficient DPad checking?
+ * X button input
+ * More descriptive description (¯\_(ツ)_/¯)
+ * Make sure you didnt goof on any of the code you bagel
  *
  */
 @TeleOp(name = "BasicMotionController", group = "idk")
 public class BasicTeleOpMC extends LinearOpMode {
-
-
-    //Used to check if 1 second of DPad movement is up
-    ElapsedTime dPadTimer = new ElapsedTime();
-
-    private int dPadMovementTime = 1000;
-
-    //Used to check if the current movement is beceause or not because of DPad movement
-    boolean wasDPadPressed = false;
-
+    //Joystick Threshhold
+    public static final double THRESHOLD = 0.1;
     //current motion
     DriveMotion motion = DriveMotion.ZERO;
 
+    ControllerButton dPadDown = new ControllerButton(new DriveMotion(-0.5, 0, 0), 1, "DPadDown");
+    ControllerButton dPadUp = new ControllerButton(new DriveMotion(0.5, 0, 0), 1, "DPadUp");
+    ControllerButton dPadRight = new ControllerButton(new DriveMotion(0, 0.5, 0), 1, "DPadRight");
+    ControllerButton dPadLeft = new ControllerButton(new DriveMotion(0, -0.5, 0), 1, "DPadLeft");
+    ControllerButton pastButton = null;
     DcMotor frontLeft;
     DcMotor frontRight;
     DcMotor backLeft;
@@ -44,71 +44,61 @@ public class BasicTeleOpMC extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            move(inputCheck(motion));
+            move(inputCheck(motion, pastButton));
         }
     }
 
     /**
      * Check Input
+     * (currentMotion and motion ARE unneeded, but might be useful in the future, so I havent phased it out.)
+     *
+     * @param currentButton The last button pressed
+     * @param current_motion The current motion of the bot
      *
      * Input Prefrence:
-     * Button - Top Priority, if button is pressed then all other input is not considered
+     * ControllerButton - Top Priority, if ControllerButton is pressed then all other input is not considered
      * Joystick - Second Priority
-     * Previous Button Press - Third Priority
+     * Previous ControllerButton Press - Third Priority
      * Nothing - Causes Robot to stop motion
      */
-    public DriveMotion inputCheck(DriveMotion current_motion){
+    public DriveMotion inputCheck(DriveMotion current_motion, ControllerButton currentButton){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
         //assuming you cant turn during movement using dpad
         if(gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up) {
-            dPadMovementTime += 1000;
-            wasDPadPressed = true;
 
-            //Following doesnt seem efficient, revise
-            //add rotation via right joystick
             if (gamepad1.dpad_down) {
-                current_motion = new DriveMotion(-0.5, 0, 0);
-            }
-            if (gamepad1.dpad_up) {
-                current_motion = new DriveMotion(0.5, 0, 0);
-            }
-            if (gamepad1.dpad_right) {
-                current_motion = new DriveMotion(0, 0.5, 0);
-            }
-            if (gamepad1.dpad_left) {
-                current_motion = new DriveMotion(0, -0.5, 0);
+                dPadDown.buttonPressedAction(currentButton);
+                currentButton = dPadDown;
             }
 
+            if (gamepad1.dpad_up) {
+                dPadUp.buttonPressedAction(currentButton);
+                currentButton = dPadUp;
+            }
+
+            if (gamepad1.dpad_right) {
+                dPadRight.buttonPressedAction(currentButton);
+                currentButton = dPadRight;
+            }
+
+            if (gamepad1.dpad_left) {
+                dPadLeft.buttonPressedAction(currentButton);
+                currentButton = dPadLeft;
+            }
+
+            current_motion = currentButton.action;
             return current_motion;
         }
 
         //joystick check
-        if (gamepad1.left_stick_y != 0 || gamepad1.left_stick_x != 0) {
-            wasDPadPressed = false;
-            dPadMovementTime = 1000;
+        if ((gamepad1.left_stick_y > THRESHOLD || gamepad1.left_stick_y < -THRESHOLD) || (gamepad1.left_stick_x > THRESHOLD || gamepad1.left_stick_x < -THRESHOLD)) {
+            currentButton = null;
             current_motion = new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             return current_motion;
         }
 
-        //if the current motion is because of a previous dPad press and the one second is not up, continue current motion
-        if (isDPadMotion()) {
-            return current_motion;
-        }
-
-        current_motion = DriveMotion.ZERO;
+        current_motion = currentButton.motion();
         return current_motion;
-    }
-
-    /**
-     * Checks if current motion is because of previous DPad input
-     * @return Whether current motion was caused by previous input
-     */
-    public boolean isDPadMotion(){
-        wasDPadPressed = wasDPadPressed && dPadTimer.milliseconds() <= dPadMovementTime;
-        if (!wasDPadPressed) {
-            dPadMovementTime = 1000;
-        }
-        return wasDPadPressed;
     }
 
     /**
