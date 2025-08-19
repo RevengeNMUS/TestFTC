@@ -27,6 +27,7 @@ public class BasicTeleOpMC extends LinearOpMode {
     ControllerButton dPadUp = new ControllerButton(new DriveMotion(0.5, 0, 0), 1, "DPadUp");
     ControllerButton dPadRight = new ControllerButton(new DriveMotion(0, 0.5, 0), 1, "DPadRight");
     ControllerButton dPadLeft = new ControllerButton(new DriveMotion(0, -0.5, 0), 1, "DPadLeft");
+    ControllerButton xButton = new ControllerButton(new DriveMotion[]{new DriveMotion(0.5, 0, 0), new DriveMotion(0, 0, -0.5)}, 1, "XButton");
     ControllerButton pastButton = null;
     DcMotor frontLeft;
     DcMotor frontRight;
@@ -51,7 +52,7 @@ public class BasicTeleOpMC extends LinearOpMode {
      * Check Input
      * (vars currentMotion and motion ARE unneeded, but might be useful in the future, so I havent phased it out.)
      *
-     * @param currentButton The last button pressed
+     * @param pastB The last button pressed
      * @param current_motion The current motion of the bot
      *
      * Input Prefrence:
@@ -60,43 +61,48 @@ public class BasicTeleOpMC extends LinearOpMode {
      * Previous ControllerButton Press - Third Priority
      * Nothing - Causes Robot to stop motion
      */
-    public DriveMotion inputCheck(DriveMotion current_motion, ControllerButton currentButton){
+    public DriveMotion inputCheck(DriveMotion current_motion, ControllerButton pastB){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
         //assuming you cant turn during movement using dpad
-        if(gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up) {
+        if(gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up || gamepad1.x) {
+
+            if(gamepad1.x){
+                xButton.buttonPressedAction(pastB);
+                pastB = xButton;
+            }
 
             if (gamepad1.dpad_down) {
-                dPadDown.buttonPressedAction(currentButton);
-                currentButton = dPadDown;
+                dPadDown.buttonPressedAction(pastB);
+                pastB = dPadDown;
             }
 
             if (gamepad1.dpad_up) {
-                dPadUp.buttonPressedAction(currentButton);
-                currentButton = dPadUp;
+                dPadUp.buttonPressedAction(pastB);
+                pastB = dPadUp;
             }
 
             if (gamepad1.dpad_right) {
-                dPadRight.buttonPressedAction(currentButton);
-                currentButton = dPadRight;
+                dPadRight.buttonPressedAction(pastB);
+                pastB = dPadRight;
             }
 
             if (gamepad1.dpad_left) {
-                dPadLeft.buttonPressedAction(currentButton);
-                currentButton = dPadLeft;
+                dPadLeft.buttonPressedAction(pastB);
+                pastB = dPadLeft;
             }
 
-            current_motion = currentButton.motion();
+            current_motion = pastB.motion();
             return current_motion;
         }
 
         //joystick check
         if ((gamepad1.left_stick_y > THRESHOLD || gamepad1.left_stick_y < -THRESHOLD) || (gamepad1.left_stick_x > THRESHOLD || gamepad1.left_stick_x < -THRESHOLD)) {
-            currentButton = null;
+            pastB = null;
             current_motion = new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             return current_motion;
         }
 
-        current_motion = currentButton.motion();
+        current_motion = pastB.motion();
         return current_motion;
     }
 

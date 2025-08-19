@@ -13,9 +13,9 @@ public class ControllerButton {
     public ElapsedTime timer = new ElapsedTime();
     public int compounded = 1;
 
-    public ControllerButton(DriveMotion[] dms, int time, String name) {
+    public ControllerButton(DriveMotion[] dms, int timePerAction, String name) {
         this.name = name;
-        this.timeForAction = time;
+        this.timeForAction = timePerAction;
         this.actions = dms;
         timer.reset();
     }
