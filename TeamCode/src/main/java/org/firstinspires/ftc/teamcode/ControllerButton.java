@@ -1,20 +1,28 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.Arrays;
+
 /**
  * Holder for any button inputs
  */
 public class ControllerButton {
     public final String name;
-    public final DriveMotion action;
+    public final DriveMotion[] actions;
     public final int timeForAction;
     public ElapsedTime timer = new ElapsedTime();
     public int compounded = 1;
 
+    public ControllerButton(DriveMotion[] dms, int time, String name) {
+        this.name = name;
+        this.timeForAction = time;
+        this.actions = dms;
+        timer.reset();
+    }
     public ControllerButton(DriveMotion dm, int time, String name) {
         this.name = name;
         this.timeForAction = time;
-        this.action = dm;
+        this.actions = new DriveMotion[]{dm}; //CHECK ARRAY SPECIFICS
         timer.reset();
     }
 
@@ -33,7 +41,7 @@ public class ControllerButton {
         }
         else
             timer.reset();
-        return action;
+        return motion();
     }
 
     /**
@@ -45,7 +53,7 @@ public class ControllerButton {
             compounded = 1;
             return DriveMotion.ZERO;
         }
-        return action;
+        return actions[((int) (timer.milliseconds()/1000)) % actions.length];
     }
 
     /**
@@ -56,8 +64,9 @@ public class ControllerButton {
     @Override
     public boolean equals(Object o){
         if(o != null && o.getClass() == this.getClass()){
-            if(((ControllerButton)o).name.equals(this.name) && ((ControllerButton)o).action.equals(this.action) && ((ControllerButton)o).timeForAction == this.timeForAction)
+            if(((ControllerButton) o).name.equals(this.name) && Arrays.equals(((ControllerButton) o).actions, (this.actions)) && ((ControllerButton) o).timeForAction == this.timeForAction) {
                 return true;
+            }
         }
         return false;
     }

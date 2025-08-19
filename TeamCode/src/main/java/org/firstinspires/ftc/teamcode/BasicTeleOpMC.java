@@ -49,7 +49,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
     /**
      * Check Input
-     * (currentMotion and motion ARE unneeded, but might be useful in the future, so I havent phased it out.)
+     * (vars currentMotion and motion ARE unneeded, but might be useful in the future, so I havent phased it out.)
      *
      * @param currentButton The last button pressed
      * @param current_motion The current motion of the bot
@@ -85,7 +85,7 @@ public class BasicTeleOpMC extends LinearOpMode {
                 currentButton = dPadLeft;
             }
 
-            current_motion = currentButton.action;
+            current_motion = currentButton.motion();
             return current_motion;
         }
 
