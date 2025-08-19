@@ -29,7 +29,7 @@ public class ControllerButton {
     /**
      * Function that should be executed when this button is pressed.
      * Allows stacking button inputs.
-     * (Possibly phase out return as you can just use the action var)
+     * (Possibly phase out return as you can just use motion())
      *
      * @param pastButton the previous button pressed (in order to stack inputs)
      * @return DriveMotion The drive motion that should be implemented on the robot
