@@ -6,7 +6,7 @@ import java.util.Arrays;
 /**
  * Holder for any button or other basic drive inputs
  */
-public class BasicDrivetrainInput {
+public class DriveActionSequence {
     private final DriveMotion[] actions;
     private final int timePerAction;
     private final ElapsedTime timer = new ElapsedTime();
@@ -17,7 +17,7 @@ public class BasicDrivetrainInput {
      * @param dms the DriveMotions to be executed by this button
      * @param timePerAction the amount of time for each action to complete in milliseconds
      */
-    public BasicDrivetrainInput(DriveMotion[] dms, int timePerAction) {
+    public DriveActionSequence(DriveMotion[] dms, int timePerAction) {
 
         this.timePerAction = timePerAction;
         this.actions = dms;
@@ -29,7 +29,7 @@ public class BasicDrivetrainInput {
      * @param dm the DriveMotion for this input to execute
      * @param time the amount of time for this DriveMotion to execute
      */
-    public BasicDrivetrainInput(DriveMotion dm, int time) {
+    public DriveActionSequence(DriveMotion dm, int time) {
         this.timePerAction = time;
         this.actions = new DriveMotion[]{dm}; //CHECK ARRAY SPECIFICS
         timer.reset();
@@ -75,7 +75,7 @@ public class BasicDrivetrainInput {
     @Override
     public boolean equals(Object o){
         if(o != null && o.getClass() == this.getClass()){
-            if(Arrays.equals(((BasicDrivetrainInput) o).actions, (this.actions)) && ((BasicDrivetrainInput) o).timePerAction == this.timePerAction) {
+            if(Arrays.equals(((DriveActionSequence) o).actions, (this.actions)) && ((DriveActionSequence) o).timePerAction == this.timePerAction) {
                 return true;
             }
         }

@@ -21,13 +21,13 @@ public class BasicTeleOpMC extends LinearOpMode {
     public static final double THRESHOLD = 0.1;
     //current motion
     DriveMotion motion = DriveMotion.ZERO;
-    BasicDrivetrainInput dPadDown = new BasicDrivetrainInput(new DriveMotion(-0.5, 0, 0), 1000);
-    BasicDrivetrainInput dPadUp = new BasicDrivetrainInput(new DriveMotion(0.5, 0, 0), 1000);
-    BasicDrivetrainInput dPadRight = new BasicDrivetrainInput(new DriveMotion(0, 0.5, 0), 1000);
-    BasicDrivetrainInput dPadLeft = new BasicDrivetrainInput(new DriveMotion(0, -0.5, 0), 1000);
-    BasicDrivetrainInput xButton = new BasicDrivetrainInput(new DriveMotion[]{new DriveMotion(0.5, 0, 0), new DriveMotion(0, 0, -0.5)}, 1000);
-    BasicDrivetrainInput[] buttonList = new BasicDrivetrainInput[]{dPadDown, dPadUp, dPadRight, dPadLeft, xButton};
-    BasicDrivetrainInput pastButton = null;
+    DriveActionSequence dPadDown = new DriveActionSequence(new DriveMotion(-0.5, 0, 0), 1000);
+    DriveActionSequence dPadUp = new DriveActionSequence(new DriveMotion(0.5, 0, 0), 1000);
+    DriveActionSequence dPadRight = new DriveActionSequence(new DriveMotion(0, 0.5, 0), 1000);
+    DriveActionSequence dPadLeft = new DriveActionSequence(new DriveMotion(0, -0.5, 0), 1000);
+    DriveActionSequence xButton = new DriveActionSequence(new DriveMotion[]{new DriveMotion(0.5, 0, 0), new DriveMotion(0, 0, -0.5)}, 1000);
+    DriveActionSequence[] buttonList = new DriveActionSequence[]{dPadDown, dPadUp, dPadRight, dPadLeft, xButton};
+    DriveActionSequence pastButton = null;
     DcMotor frontLeft;
     DcMotor frontRight;
     DcMotor backLeft;
@@ -55,12 +55,12 @@ public class BasicTeleOpMC extends LinearOpMode {
      * @param current_motion The current motion of the bot
      *
      * Input Prefrence:
-     * BasicDrivetrainInput - Top Priority, if BasicDrivetrainInput is pressed then all other input is not considered
+     * DriveActionSequence - Top Priority, if DriveActionSequence is pressed then all other input is not considered
      * Joystick - Second Priority
-     * Previous BasicDrivetrainInput Press - Third Priority
+     * Previous DriveActionSequence Press - Third Priority
      * Nothing - Causes Robot to stop motion
      */
-    public DriveMotion inputCheck(DriveMotion current_motion, BasicDrivetrainInput pastB){
+    public DriveMotion inputCheck(DriveMotion current_motion, DriveActionSequence pastB){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
         //assuming you cant turn during movement using dpad
         if(gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up || gamepad1.x) {
@@ -82,7 +82,7 @@ public class BasicTeleOpMC extends LinearOpMode {
                 pastB = dPadLeft;
             }
 
-            for (BasicDrivetrainInput i : buttonList){
+            for (DriveActionSequence i : buttonList){
                 if (!pastB.equals(i)) {
                     i.reset();
                 }
