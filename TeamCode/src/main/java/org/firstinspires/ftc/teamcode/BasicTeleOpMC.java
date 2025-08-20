@@ -33,6 +33,8 @@ public class BasicTeleOpMC extends LinearOpMode {
     DcMotor backLeft;
     DcMotor backRight;
 
+    private int repeatedPresses = 0;
+
     @Override
     public void runOpMode() {
         frontLeft = hardwareMap.get(DcMotor.class, "front_left_drive");
@@ -66,27 +68,48 @@ public class BasicTeleOpMC extends LinearOpMode {
         if(gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up || gamepad1.x) {
 
             if (gamepad1.x) {
-                xButton.buttonPressedAction();
+                xButton.init();
+                if (pastB.equals(xButton) && pastB.motion() != DriveMotion.ZERO)
+                    repeatedPresses++;
+                else {
+                    repeatedPresses = 0;
+                    dPadDown.init();
+                }
                 pastB = xButton;
             } else if (gamepad1.dpad_down) {
-                dPadDown.buttonPressedAction();
+                if (pastB.equals(dPadDown) && pastB.motion() != DriveMotion.ZERO)
+                    repeatedPresses++;
+                else {
+                    repeatedPresses = 0;
+                    dPadDown.init();
+                }
                 pastB = dPadDown;
             } else if (gamepad1.dpad_up) {
-                dPadUp.buttonPressedAction();
+                if (pastB.equals(dPadUp) && pastB.motion() != DriveMotion.ZERO)
+                    repeatedPresses++;
+                else {
+                    repeatedPresses = 0;
+                    dPadUp.init();
+                }
                 pastB = dPadUp;
             } else if (gamepad1.dpad_right) {
-                dPadRight.buttonPressedAction();
+                if (pastB.equals(dPadRight) && pastB.motion() != DriveMotion.ZERO)
+                    repeatedPresses++;
+                else {
+                    repeatedPresses = 0;
+                    dPadRight.init();
+                }
                 pastB = dPadRight;
             } else if (gamepad1.dpad_left) {
-                dPadLeft.buttonPressedAction();
+                if (pastB.equals(dPadLeft) && pastB.motion() != DriveMotion.ZERO)
+                    repeatedPresses++;
+                else {
+                    repeatedPresses = 0;
+                    dPadLeft.init();
+                }
                 pastB = dPadLeft;
             }
 
-            for (DriveActionSequence i : buttonList){
-                if (!pastB.equals(i)) {
-                    i.reset();
-                }
-            }
             current_motion = pastB.motion();
             return current_motion;
         }
@@ -99,6 +122,10 @@ public class BasicTeleOpMC extends LinearOpMode {
         }
 
         if(pastB != null) {
+            if(pastB.motion() == DriveMotion.ZERO && !(repeatedPresses <= 0)){
+                repeatedPresses--;
+                pastB.init();
+            }
             current_motion = pastB.motion();
             return current_motion;
 
