@@ -59,7 +59,7 @@ public class BasicDrivetrainInput {
      * @return The vector of motion that the bot should implement
      */
     public DriveMotion motion() {
-        if(timer.milliseconds() > timePerAction * 1000 * presses){
+        if(timer.milliseconds() > timePerAction * presses){
             //reset all
             presses = 0;
             return DriveMotion.ZERO;
