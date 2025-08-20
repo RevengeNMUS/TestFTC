@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  *
  * To-Do:
  * Debuging (get android studio fixed) and General Polishing
- * X button input
  * More descriptive description (¯\_(ツ)_/¯)
  * Make sure you didnt goof on any of the code you bagel
  *
@@ -22,13 +21,13 @@ public class BasicTeleOpMC extends LinearOpMode {
     public static final double THRESHOLD = 0.1;
     //current motion
     DriveMotion motion = DriveMotion.ZERO;
-
-    ControllerButton dPadDown = new ControllerButton(new DriveMotion(-0.5, 0, 0), 1, "DPadDown");
-    ControllerButton dPadUp = new ControllerButton(new DriveMotion(0.5, 0, 0), 1, "DPadUp");
-    ControllerButton dPadRight = new ControllerButton(new DriveMotion(0, 0.5, 0), 1, "DPadRight");
-    ControllerButton dPadLeft = new ControllerButton(new DriveMotion(0, -0.5, 0), 1, "DPadLeft");
-    ControllerButton xButton = new ControllerButton(new DriveMotion[]{new DriveMotion(0.5, 0, 0), new DriveMotion(0, 0, -0.5)}, 1, "XButton");
-    ControllerButton pastButton = null;
+    BasicDrivetrainInput dPadDown = new BasicDrivetrainInput(new DriveMotion(-0.5, 0, 0), 1000);
+    BasicDrivetrainInput dPadUp = new BasicDrivetrainInput(new DriveMotion(0.5, 0, 0), 1000);
+    BasicDrivetrainInput dPadRight = new BasicDrivetrainInput(new DriveMotion(0, 0.5, 0), 1000);
+    BasicDrivetrainInput dPadLeft = new BasicDrivetrainInput(new DriveMotion(0, -0.5, 0), 1000);
+    BasicDrivetrainInput xButton = new BasicDrivetrainInput(new DriveMotion[]{new DriveMotion(0.5, 0, 0), new DriveMotion(0, 0, -0.5)}, 1000);
+    BasicDrivetrainInput[] buttonList = new BasicDrivetrainInput[]{dPadDown, dPadUp, dPadRight, dPadLeft, xButton};
+    BasicDrivetrainInput pastButton = null;
     DcMotor frontLeft;
     DcMotor frontRight;
     DcMotor backLeft;
@@ -56,41 +55,38 @@ public class BasicTeleOpMC extends LinearOpMode {
      * @param current_motion The current motion of the bot
      *
      * Input Prefrence:
-     * ControllerButton - Top Priority, if ControllerButton is pressed then all other input is not considered
+     * BasicDrivetrainInput - Top Priority, if BasicDrivetrainInput is pressed then all other input is not considered
      * Joystick - Second Priority
-     * Previous ControllerButton Press - Third Priority
+     * Previous BasicDrivetrainInput Press - Third Priority
      * Nothing - Causes Robot to stop motion
      */
-    public DriveMotion inputCheck(DriveMotion current_motion, ControllerButton pastB){
+    public DriveMotion inputCheck(DriveMotion current_motion, BasicDrivetrainInput pastB){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
         //assuming you cant turn during movement using dpad
         if(gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up || gamepad1.x) {
 
-            if(gamepad1.x){
-                xButton.buttonPressedAction(pastB);
+            if (gamepad1.x) {
+                xButton.buttonPressedAction();
                 pastB = xButton;
-            }
-
-            if (gamepad1.dpad_down) {
-                dPadDown.buttonPressedAction(pastB);
+            } else if (gamepad1.dpad_down) {
+                dPadDown.buttonPressedAction();
                 pastB = dPadDown;
-            }
-
-            if (gamepad1.dpad_up) {
-                dPadUp.buttonPressedAction(pastB);
+            } else if (gamepad1.dpad_up) {
+                dPadUp.buttonPressedAction();
                 pastB = dPadUp;
-            }
-
-            if (gamepad1.dpad_right) {
-                dPadRight.buttonPressedAction(pastB);
+            } else if (gamepad1.dpad_right) {
+                dPadRight.buttonPressedAction();
                 pastB = dPadRight;
-            }
-
-            if (gamepad1.dpad_left) {
-                dPadLeft.buttonPressedAction(pastB);
+            } else if (gamepad1.dpad_left) {
+                dPadLeft.buttonPressedAction();
                 pastB = dPadLeft;
             }
 
+            for (BasicDrivetrainInput i : buttonList){
+                if (!pastB.equals(i)) {
+                    i.reset();
+                }
+            }
             current_motion = pastB.motion();
             return current_motion;
         }
@@ -102,8 +98,13 @@ public class BasicTeleOpMC extends LinearOpMode {
             return current_motion;
         }
 
-        current_motion = pastB.motion();
-        return current_motion;
+        if(pastB != null) {
+            current_motion = pastB.motion();
+            return current_motion;
+
+        }
+
+        return DriveMotion.ZERO;
     }
 
     /**
