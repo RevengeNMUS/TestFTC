@@ -67,49 +67,48 @@ public class BasicTeleOpMC extends LinearOpMode {
     public DriveMotion inputCheck(DriveMotion current_motion, DriveActionSequence pastB){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
         //assuming you cant turn during movement using dpad
-        if(gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up || gamepad1.x) {
+        if (gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up || gamepad1.x) {
 
             if (gamepad1.xWasPressed()) {
-                xButton.init();
-                if (pastB.equals(xButton) && pastB.motion() != DriveMotion.ZERO)
+
+                if (pastB.equals(new DriveActionSequence(xButton)) && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
-                else {
+                else
                     repeatedPresses = 0;
-                    dPadDown.init();
-                }
-                pastB = xButton;
+                pastB = new DriveActionSequence(xButton);
+
             } else if (gamepad1.dpadDownWasPressed()) {
-                if (pastB.equals(dPadDown) && pastB.motion() != DriveMotion.ZERO)
+
+                if (pastB.equals(new DriveActionSequence(dPadDown)) && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
-                else {
+                else
                     repeatedPresses = 0;
-                    dPadDown.init();
-                }
-                pastB = dPadDown;
+                pastB = new DriveActionSequence(dPadDown);
+
             } else if (gamepad1.dpadUpWasPressed()) {
-                if (pastB.equals(dPadUp) && pastB.motion() != DriveMotion.ZERO)
+
+                if (pastB.equals(new DriveActionSequence(dPadUp)) && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
-                else {
+                else
                     repeatedPresses = 0;
-                    dPadUp.init();
-                }
-                pastB = dPadUp;
+                pastB = new DriveActionSequence(dPadUp);
+
             } else if (gamepad1.dpadRightWasPressed()) {
-                if (pastB.equals(dPadRight) && pastB.motion() != DriveMotion.ZERO)
+
+                if (pastB.equals(new DriveActionSequence(dPadRight)) && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
-                else {
+                else
                     repeatedPresses = 0;
-                    dPadRight.init();
-                }
-                pastB = dPadRight;
+                pastB = new DriveActionSequence(dPadRight);
+
             } else if (gamepad1.dpadLeftWasPressed()) {
-                if (pastB.equals(dPadLeft) && pastB.motion() != DriveMotion.ZERO)
+
+                if (pastB.equals(new DriveActionSequence(dPadLeft)) && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
-                else {
+                else
                     repeatedPresses = 0;
-                    dPadLeft.init();
-                }
-                pastB = dPadLeft;
+                pastB = new DriveActionSequence(dPadLeft);
+
             }
 
             current_motion = pastB.motion();
@@ -128,9 +127,9 @@ public class BasicTeleOpMC extends LinearOpMode {
                 repeatedPresses--;
                 pastB.init();
             }
+
             current_motion = pastB.motion();
             return current_motion;
-
         }
 
         return DriveMotion.ZERO;
