@@ -10,7 +10,6 @@ public class DriveActionSequence {
     private final DriveMotion[] actions;
     private final int timePerAction;
     private final ElapsedTime timer = new ElapsedTime();
-    public int presses = 0;
 
     /** Basic Contructor for a drivetrain input
      *
@@ -21,6 +20,12 @@ public class DriveActionSequence {
 
         this.timePerAction = timePerAction;
         this.actions = dms;
+        timer.reset();
+    }
+
+    public DriveActionSequence(DriveActionSequence das){
+        this.timePerAction = das.timePerAction;
+        this.actions = das.actions;
         timer.reset();
     }
 
@@ -37,34 +42,28 @@ public class DriveActionSequence {
 
     /**
      * Function that should be executed when this button is pressed.
-     * Allows stacking button inputs.
      * (Possibly phase out return as you can just use motion())
      *
      * @return DriveMotion The drive motion that should be implemented on the robot
      */
-    public DriveMotion buttonPressedAction(){
-        if (motion() != DriveMotion.ZERO) {
-            presses++;
-        }
-        else
-            timer.reset();
+    public DriveMotion init(){
+        timer.reset();
         return motion();
     }
 
     public void reset(){
-        presses = 0;
+        timer.reset();
     }
+
     /**
      * Checks and gives the motion that this button should contribute to the bot
      * @return The vector of motion that the bot should implement
      */
     public DriveMotion motion() {
-        if(timer.milliseconds() > timePerAction * presses){
-            //reset all
-            presses = 0;
+        if(timer.milliseconds() > timePerAction * actions.length){
             return DriveMotion.ZERO;
         }
-        return actions[((int) (timer.milliseconds()/1000)) % actions.length];
+        return actions[((int) (timer.milliseconds()/timePerAction)) % actions.length];
     }
 
     /**

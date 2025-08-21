@@ -61,13 +61,15 @@ public class BasicTeleOpMC extends LinearOpMode {
      * Joystick - Second Priority
      * Previous DriveActionSequence Press - Third Priority
      * Nothing - Causes Robot to stop motion
+     *
+     *
      */
     public DriveMotion inputCheck(DriveMotion current_motion, DriveActionSequence pastB){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
         //assuming you cant turn during movement using dpad
         if(gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up || gamepad1.x) {
 
-            if (gamepad1.x) {
+            if (gamepad1.xWasPressed()) {
                 xButton.init();
                 if (pastB.equals(xButton) && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
@@ -76,7 +78,7 @@ public class BasicTeleOpMC extends LinearOpMode {
                     dPadDown.init();
                 }
                 pastB = xButton;
-            } else if (gamepad1.dpad_down) {
+            } else if (gamepad1.dpadDownWasPressed()) {
                 if (pastB.equals(dPadDown) && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
                 else {
@@ -84,7 +86,7 @@ public class BasicTeleOpMC extends LinearOpMode {
                     dPadDown.init();
                 }
                 pastB = dPadDown;
-            } else if (gamepad1.dpad_up) {
+            } else if (gamepad1.dpadUpWasPressed()) {
                 if (pastB.equals(dPadUp) && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
                 else {
@@ -92,7 +94,7 @@ public class BasicTeleOpMC extends LinearOpMode {
                     dPadUp.init();
                 }
                 pastB = dPadUp;
-            } else if (gamepad1.dpad_right) {
+            } else if (gamepad1.dpadRightWasPressed()) {
                 if (pastB.equals(dPadRight) && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
                 else {
@@ -100,7 +102,7 @@ public class BasicTeleOpMC extends LinearOpMode {
                     dPadRight.init();
                 }
                 pastB = dPadRight;
-            } else if (gamepad1.dpad_left) {
+            } else if (gamepad1.dpadLeftWasPressed()) {
                 if (pastB.equals(dPadLeft) && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
                 else {
