@@ -19,7 +19,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name = "BasicMotionController", group = "idk")
 public class BasicTeleOpMC extends LinearOpMode {
     //Joystick Threshhold
-    public static final double THRESHOLD = 0.1;
+    public static final double JOYSTICK_THRESHOLD = 0.1;
+    //Trigger Threshold
+    public static final double TRIGGER_THRESHOLD = 0.2;
+    //Slow mode factor
+    public static final double SLOW_MODE_FACTOR = 0.3;
 
     //current motion of the robot
     DriveMotion motion = DriveMotion.ZERO;
@@ -46,13 +50,6 @@ public class BasicTeleOpMC extends LinearOpMode {
     boolean dPadUpPressed = false;
     boolean dPadRightPressed = false;
     boolean dPadLeftPressed = false;
-
-    //Screenshot of input (Change naming to avoid confusion with above vars)
-    boolean dPadLeft = false;
-    boolean dPadRight = false;
-    boolean dPadUp = false;
-    boolean dPadDown = false;
-    boolean xButton = false;
 
     //Amount of times that button presses have been layered
     private int repeatedPresses = 0;
@@ -100,11 +97,12 @@ public class BasicTeleOpMC extends LinearOpMode {
 
 
         //Screenshot of inputs
-        dPadDown = gamepad1.dpadDownWasPressed();
-        dPadLeft = gamepad1.dpadLeftWasPressed();
-        dPadRight = gamepad1.dpadRightWasPressed();
-        dPadUp = gamepad1.dpadUpWasPressed();
-        xButton = gamepad1.xWasPressed();
+        boolean dPadDown = gamepad1.dpadDownWasPressed();
+        boolean dPadLeft = gamepad1.dpadLeftWasPressed();
+        boolean dPadRight = gamepad1.dpadRightWasPressed();
+        boolean dPadUp = gamepad1.dpadUpWasPressed();
+        boolean xButton = gamepad1.xWasPressed();
+        boolean rightTrigger = gamepad1.right_trigger > TRIGGER_THRESHOLD;
 
         if (dPadDown || dPadLeft || dPadRight || dPadUp || xButton) {
 
@@ -179,8 +177,13 @@ public class BasicTeleOpMC extends LinearOpMode {
         }
 
         //joystick check
-        if ((gamepad1.left_stick_y > THRESHOLD || gamepad1.left_stick_y < -THRESHOLD) || (gamepad1.left_stick_x > THRESHOLD || gamepad1.left_stick_x < -THRESHOLD)) {
+        if ((gamepad1.left_stick_y > JOYSTICK_THRESHOLD || gamepad1.left_stick_y < -JOYSTICK_THRESHOLD) || (gamepad1.left_stick_x > JOYSTICK_THRESHOLD || gamepad1.left_stick_x < -JOYSTICK_THRESHOLD)) {
             pastB = null;
+            if(rightTrigger) {
+                //Check if rotation should be affected by SLOW_MODE_FACTOR
+                current_motion = new DriveMotion(gamepad1.left_stick_y * SLOW_MODE_FACTOR, gamepad1.left_stick_x * SLOW_MODE_FACTOR, gamepad1.right_stick_x * SLOW_MODE_FACTOR);
+                return current_motion;
+            }
             current_motion = new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             return current_motion;
         }
