@@ -13,31 +13,48 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * Debuging (get android studio fixed) and General Polishing
  * More descriptive description (¯\_(ツ)_/¯)
  * Make sure you didnt goof on any of the code you bagel
+ * Add more comments cro
  *
  */
 @TeleOp(name = "BasicMotionController", group = "idk")
 public class BasicTeleOpMC extends LinearOpMode {
     //Joystick Threshhold
     public static final double THRESHOLD = 0.1;
-    //current motion
+
+    //current motion of the robot
     DriveMotion motion = DriveMotion.ZERO;
-    DriveActionSequence dPadDown = new DriveActionSequence(new DriveMotion(-0.5, 0, 0), 1000);
-    DriveActionSequence dPadUp = new DriveActionSequence(new DriveMotion(0.5, 0, 0), 1000);
-    DriveActionSequence dPadRight = new DriveActionSequence(new DriveMotion(0, 0.5, 0), 1000);
-    DriveActionSequence dPadLeft = new DriveActionSequence(new DriveMotion(0, -0.5, 0), 1000);
-    DriveActionSequence xButton = new DriveActionSequence(new DriveMotion[]{new DriveMotion(0.5, 0, 0), new DriveMotion(0, 0, -0.5)}, 1000);
+
+    //DriveActionSequences to be activated by each button (See DriveActionSequence)
+    DriveActionSequence downMovement = new DriveActionSequence(new DriveMotion(-0.5, 0, 0), 1000);
+    DriveActionSequence upMovement = new DriveActionSequence(new DriveMotion(0.5, 0, 0), 1000);
+    DriveActionSequence rightMovement = new DriveActionSequence(new DriveMotion(0, 0.5, 0), 1000);
+    DriveActionSequence leftMovement = new DriveActionSequence(new DriveMotion(0, -0.5, 0), 1000);
+    DriveActionSequence xButtonMovement = new DriveActionSequence(new DriveMotion[]{new DriveMotion(0.5, 0, 0), new DriveMotion(0, 0, -0.5)}, 1000);
+
+    //Keeps track of the last button pressed (for continuing motion, and helping with layering)
     DriveActionSequence pastButton = null;
+
+    //Motors
     DcMotor frontLeft;
     DcMotor frontRight;
     DcMotor backLeft;
     DcMotor backRight;
+
+    //Booleans to keep track of the past buttons (Layer purposes)
     boolean xButtonPressed = false;
     boolean dPadDownPressed = false;
     boolean dPadUpPressed = false;
     boolean dPadRightPressed = false;
     boolean dPadLeftPressed = false;
 
+    //Screenshot of input (Change naming to avoid confusion with above vars)
+    boolean dPadLeft = false;
+    boolean dPadRight = false;
+    boolean dPadUp = false;
+    boolean dPadDown = false;
+    boolean xButton = false;
 
+    //Amount of times that button presses have been layered
     private int repeatedPresses = 0;
 
     @Override
@@ -72,67 +89,76 @@ public class BasicTeleOpMC extends LinearOpMode {
     public DriveMotion inputCheck(DriveMotion current_motion, DriveActionSequence pastB){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
         //assuming you cant turn during movement using dpad
-        if (gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right || gamepad1.dpad_up || gamepad1.x) {
 
-            if (gamepad1.xWasPressed()) {
+
+        //Screenshot of inputs
+        dPadDown = gamepad1.dpadDownWasPressed();
+        dPadLeft = gamepad1.dpadLeftWasPressed();
+        dPadRight = gamepad1.dpadRightWasPressed();
+        dPadUp = gamepad1.dpadUpWasPressed();
+        xButton = gamepad1.xWasPressed();
+
+        if (dPadDown || dPadLeft || dPadRight || dPadUp || xButton) {
+
+            if (xButton) {
 
                 if (xButtonPressed && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
                 else
                     repeatedPresses = 0;
-                pastB = new DriveActionSequence(xButton);
+                pastB = new DriveActionSequence(xButtonMovement);
                 xButtonPressed = true;
                 dPadDownPressed = false;
                 dPadUpPressed = false;
                 dPadRightPressed = false;
                 dPadLeftPressed = false;
 
-            } else if (gamepad1.dpadDownWasPressed()) {
+            } else if (dPadDown) {
 
                 if (dPadDownPressed && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
                 else
                     repeatedPresses = 0;
-                pastB = new DriveActionSequence(dPadDown);
+                pastB = new DriveActionSequence(downMovement);
                 xButtonPressed = false;
                 dPadDownPressed = true;
                 dPadUpPressed = false;
                 dPadRightPressed = false;
                 dPadLeftPressed = false;
 
-            } else if (gamepad1.dpadUpWasPressed()) {
+            } else if (dPadUp) {
 
                 if (dPadUpPressed && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
                 else
                     repeatedPresses = 0;
-                pastB = new DriveActionSequence(dPadUp);
+                pastB = new DriveActionSequence(upMovement);
                 xButtonPressed = false;
                 dPadDownPressed = false;
                 dPadUpPressed = true;
                 dPadRightPressed = false;
                 dPadLeftPressed = false;
 
-            } else if (gamepad1.dpadRightWasPressed()) {
+            } else if (dPadRight) {
 
                 if (dPadRightPressed && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
                 else
                     repeatedPresses = 0;
-                pastB = new DriveActionSequence(dPadRight);
+                pastB = new DriveActionSequence(rightMovement);
                 xButtonPressed = false;
                 dPadDownPressed = false;
                 dPadUpPressed = false;
                 dPadRightPressed = true;
                 dPadLeftPressed = false;
 
-            } else if (gamepad1.dpadLeftWasPressed()) {
+            } else if (dPadLeft) {
 
                 if (dPadLeftPressed && pastB.motion() != DriveMotion.ZERO)
                     repeatedPresses++;
                 else
                     repeatedPresses = 0;
-                pastB = new DriveActionSequence(dPadLeft);
+                pastB = new DriveActionSequence(leftMovement);
                 xButtonPressed = false;
                 dPadDownPressed = false;
                 dPadUpPressed = false;
