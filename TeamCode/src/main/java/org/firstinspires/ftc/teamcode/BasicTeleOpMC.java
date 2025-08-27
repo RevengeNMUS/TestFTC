@@ -64,11 +64,19 @@ public class BasicTeleOpMC extends LinearOpMode {
         backLeft = hardwareMap.get(DcMotor.class, "back_left_drive");
         backRight = hardwareMap.get(DcMotor.class, "back_right_drive");
 
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
         waitForStart();
 
         while(opModeIsActive()){
             move(inputCheck(motion, pastButton));
         }
+
+        move(new DriveMotion(0,0,0));
     }
 
     /**
