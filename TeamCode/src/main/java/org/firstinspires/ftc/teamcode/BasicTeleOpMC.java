@@ -179,6 +179,13 @@ public class BasicTeleOpMC extends LinearOpMode {
         //joystick check
         if ((gamepad1.left_stick_y > JOYSTICK_THRESHOLD || gamepad1.left_stick_y < -JOYSTICK_THRESHOLD) || (gamepad1.left_stick_x > JOYSTICK_THRESHOLD || gamepad1.left_stick_x < -JOYSTICK_THRESHOLD)) {
             pastB = null;
+
+            dPadRightPressed = false;
+            dPadLeftPressed = false;
+            dPadDownPressed = false;
+            dPadUpPressed = false;
+            xButtonPressed = false;
+
             if(rightTrigger) {
                 //Check if rotation should be affected by SLOW_MODE_FACTOR
                 current_motion = new DriveMotion(gamepad1.left_stick_y * SLOW_MODE_FACTOR, gamepad1.left_stick_x * SLOW_MODE_FACTOR, gamepad1.right_stick_x * SLOW_MODE_FACTOR);
@@ -186,6 +193,8 @@ public class BasicTeleOpMC extends LinearOpMode {
             }
             current_motion = new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             return current_motion;
+
+
         }
 
         if(pastB != null) {
