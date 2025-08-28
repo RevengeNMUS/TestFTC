@@ -198,7 +198,7 @@ public class BasicTeleOpMC extends LinearOpMode {
         }
 
         if(pastB != null) {
-            if(pastB.motion() == DriveMotion.ZERO && !(repeatedPresses <= 0)){
+            if(pastB.motion().equals(DriveMotion.ZERO) && repeatedPresses > 0){
                 repeatedPresses--;
                 pastB.init();
             }
