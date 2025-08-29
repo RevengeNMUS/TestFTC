@@ -108,7 +108,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
             if (xButton) {
 
-                if (xButtonPressed && pastB.motion() != DriveMotion.ZERO) {
+                if (xButtonPressed && pastB.motion().equals(DriveMotion.ZERO)) {
                     pastB = new DriveActionSequence(xButtonMovement);
                     repeatedPresses++;
                 } else {
@@ -125,7 +125,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
             } else if (dPadDown) {
 
-                if (dPadDownPressed && pastB.motion() != DriveMotion.ZERO) {
+                if (dPadDownPressed && pastB.motion().equals(DriveMotion.ZERO)) {
                     pastB = new DriveActionSequence(downMovement);
                     repeatedPresses++;
                 } else {
@@ -141,7 +141,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
             } else if (dPadUp) {
 
-                if (dPadUpPressed && pastB.motion() != DriveMotion.ZERO){
+                if (dPadUpPressed && pastB.motion().equals(DriveMotion.ZERO)){
                     pastB = new DriveActionSequence(upMovement);
                     repeatedPresses++;
                 } else {
@@ -157,7 +157,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
             } else if (dPadRight) {
 
-                if (dPadRightPressed && pastB.motion() != DriveMotion.ZERO){
+                if (dPadRightPressed && pastB.motion().equals(DriveMotion.ZERO)){
                     pastB = new DriveActionSequence(rightMovement);
                     repeatedPresses++;
                 } else {
@@ -173,7 +173,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
             } else if (dPadLeft) {
 
-                if (dPadLeftPressed && pastB.motion() != DriveMotion.ZERO){
+                if (dPadLeftPressed && pastB.motion().equals(DriveMotion.ZERO)){
                     pastB = new DriveActionSequence(leftMovement);
                     repeatedPresses++;
                 } else {
