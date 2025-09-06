@@ -75,7 +75,7 @@ public class BasicTeleOpMC extends LinearOpMode {
     }
 
     public void run(){
-        move(inputCheck(pastButton));
+        updateDrivetrain(inputCheck(pastButton));
     }
 
     /**
@@ -83,7 +83,6 @@ public class BasicTeleOpMC extends LinearOpMode {
      * (vars currentMotion and motion ARE unneeded, but might be useful in the future, so I havent phased it out.)
      *
      * @param pastB The last button pressed
-     * @param current_motion The current motion of the bot
      *
      * Input Prefrence:
      * DriveActionSequence - Top Priority, if DriveActionSequence is pressed then all other input is not considered
@@ -93,37 +92,40 @@ public class BasicTeleOpMC extends LinearOpMode {
      *
      *
      */
-    public DriveMotion inputCheck(DriveMotion current_motion, DriveActionSequence pastB){
+    public DriveMotion inputCheck(DriveActionSequence pastB){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
         //assuming you cant turn during movement using dpad
 
+        handlePastButtonPress(pastB);
+        buttonInputs(pastB);
+        joystickInterupt(pastB);
 
-        //Screenshot of inputs
+        //not joystick interupt
+        if(pastB != null){
+            return pastB.motion();
+        } else {
+            //yes joystick interupt
+            return joyStickInput();
+        }
+    }
+
+    public DriveMotion joyStickInput(){
         boolean rightTrigger = gamepad1.right_trigger > TRIGGER_THRESHOLD;
 
-        buttonInputs(pastB);
-
-        joystickInterupt(pastB);
-        
-        //joystick check
-            if(rightTrigger) {
-                //Check if rotation should be affected by SLOW_MODE_FACTOR
-                current_motion = new DriveMotion(gamepad1.left_stick_y * SLOW_MODE_FACTOR, gamepad1.left_stick_x * SLOW_MODE_FACTOR, gamepad1.right_stick_x * SLOW_MODE_FACTOR);
-                return current_motion;
-            }
-            current_motion = new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-            return current_motion;
-
-        if(pastB != null) {
-            if(!pastB.motionIsActive() && repeatedPresses > 0){
-                repeatedPresses--;
-                pastB.init();
-            }
-            
-            return pastB.motion();
+        if(rightTrigger) {
+            //Check if rotation should be affected by SLOW_MODE_FACTOR
+            return new DriveMotion(gamepad1.left_stick_y * SLOW_MODE_FACTOR, gamepad1.left_stick_x * SLOW_MODE_FACTOR, gamepad1.right_stick_x * SLOW_MODE_FACTOR);
         }
+        return new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+    }
 
-        return DriveMotion.ZERO;
+    public void handlePastButtonPress(DriveActionSequence pastButton){
+        if(pastButton != null) {
+            if(!pastButton.motionIsActive() && repeatedPresses > 0){
+                repeatedPresses--;
+                pastButton.init();
+            }
+        }
     }
 
     public void joystickInterupt(DriveActionSequence pastButton){
@@ -235,7 +237,7 @@ public class BasicTeleOpMC extends LinearOpMode {
      *
      * @param dsr the drive strafe rotation for movement
      */
-    public void move(DriveMotion dsr){
+    public void updateDrivetrain(DriveMotion dsr){
         frontLeft.setPower(dsr.drive - dsr.strafe + dsr.rotate);
         frontRight.setPower(dsr.drive + dsr.strafe - dsr.rotate);
         backLeft.setPower(dsr.drive + dsr.strafe + dsr.rotate);
