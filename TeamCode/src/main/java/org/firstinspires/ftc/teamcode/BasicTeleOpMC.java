@@ -24,6 +24,8 @@ public class BasicTeleOpMC extends LinearOpMode {
     //Slow mode factor
     public static final double SLOW_MODE_FACTOR = 0.3;
 
+    Buttons buttons = new Buttons(gamepad1);
+
     //DriveActionSequences to be activated by each button (See DriveActionSequence)
     DriveActionSequence backwardsMotion = new DriveActionSequence(new DriveMotion(-0.5, 0, 0), 1000);
     DriveActionSequence upMotion = new DriveActionSequence(new DriveMotion(0.5, 0, 0), 1000);
@@ -89,13 +91,13 @@ public class BasicTeleOpMC extends LinearOpMode {
 
         handlePastButtonPress(pastB);
         buttonInputs(pastB);
-        joystickInterupt(pastB);
+        joystickInterrupt(pastB);
 
-        //not joystick interupt
+        //not joystick interrupt
         if(pastB != null){
             return pastB.motion();
         } else {
-            //yes joystick interupt
+            //yes joystick interrupt
             return joyStickInput();
         }
     }
@@ -136,7 +138,7 @@ public class BasicTeleOpMC extends LinearOpMode {
      * of joystick input
      * @param pastButton last button pressed
      */
-    public void joystickInterupt(DriveActionSequence pastButton){
+    public void joystickInterrupt(DriveActionSequence pastButton){
         if ((gamepad1.left_stick_y > JOYSTICK_THRESHOLD || gamepad1.left_stick_y < -JOYSTICK_THRESHOLD) ||
             (gamepad1.left_stick_x > JOYSTICK_THRESHOLD || gamepad1.left_stick_x < -JOYSTICK_THRESHOLD)) {
 
@@ -155,11 +157,11 @@ public class BasicTeleOpMC extends LinearOpMode {
      * @param pastButton last button pressed
      */
     public void buttonInputs(DriveActionSequence pastButton){
-        boolean dPadDown = gamepad1.dpadDownWasPressed();
-        boolean dPadLeft = gamepad1.dpadLeftWasPressed();
-        boolean dPadRight = gamepad1.dpadRightWasPressed();
-        boolean dPadUp = gamepad1.dpadUpWasPressed();
-        boolean xButton = gamepad1.xWasPressed();
+        boolean dPadDown = buttons.dpaddownWasPressed();
+        boolean dPadLeft = buttons.dpadleftWasPressed();
+        boolean dPadRight = buttons.dpadrightWasPressed();
+        boolean dPadUp = buttons.dpadupWasPressed();
+        boolean xButton = buttons.xWasPressed();
 
         if (xButton) {
 
@@ -172,6 +174,7 @@ public class BasicTeleOpMC extends LinearOpMode {
                 pastButton.init();
 
             }
+
             xButtonLastPressed = true;
             dPadDownLastPressed = false;
             dPadUpLastPressed = false;
