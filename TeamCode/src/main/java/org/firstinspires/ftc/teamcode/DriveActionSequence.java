@@ -11,7 +11,7 @@ public class DriveActionSequence {
     private final int timePerAction;
     private final ElapsedTime timer = new ElapsedTime();
 
-    /** Basic Contructor for a drivetrain input
+    /** Multi-motion DriveActionSequence constructor
      *
      * @param dms the DriveMotions to be executed by this button
      * @param timePerAction the amount of time for each action to complete in milliseconds
@@ -23,6 +23,9 @@ public class DriveActionSequence {
         timer.reset();
     }
 
+    /**
+     * Copy-Constructor
+     */
     public DriveActionSequence(DriveActionSequence das){
         this.timePerAction = das.timePerAction;
         this.actions = das.actions;
@@ -30,7 +33,7 @@ public class DriveActionSequence {
     }
 
     /**
-     *
+     * Single Motion DriveActionSequence contructor
      * @param dm the DriveMotion for this input to execute
      * @param time the amount of time for this DriveMotion to execute
      */
@@ -42,7 +45,7 @@ public class DriveActionSequence {
 
     /**
      * Function that should be executed when this button is pressed.
-     *
+     * It resets the timer of this DAS
      */
     public void init(){
         timer.reset();
