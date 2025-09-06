@@ -70,10 +70,12 @@ public class BasicTeleOpMC extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            move(inputCheck(motion, pastButton));
+            run();
         }
+    }
 
-        move(new DriveMotion(0,0,0));
+    public void run(){
+        move(inputCheck(pastButton));
     }
 
     /**
@@ -97,111 +99,13 @@ public class BasicTeleOpMC extends LinearOpMode {
 
 
         //Screenshot of inputs
-        boolean dPadDown = gamepad1.dpadDownWasPressed();
-        boolean dPadLeft = gamepad1.dpadLeftWasPressed();
-        boolean dPadRight = gamepad1.dpadRightWasPressed();
-        boolean dPadUp = gamepad1.dpadUpWasPressed();
-        boolean xButton = gamepad1.xWasPressed();
         boolean rightTrigger = gamepad1.right_trigger > TRIGGER_THRESHOLD;
 
-        if (dPadDown || dPadLeft || dPadRight || dPadUp || xButton) {
+        buttonInputs(pastB);
 
-            if (xButton) {
-
-                if (xButtonPressed && !pastB.motion().equals(DriveMotion.ZERO)) {
-                    pastB = new DriveActionSequence(xButtonMovement);
-                    repeatedPresses++;
-                } else {
-                    pastB = new DriveActionSequence(xButtonMovement);
-                    repeatedPresses = 0;
-                    pastB.reset();
-
-                }
-                xButtonPressed = true;
-                dPadDownPressed = false;
-                dPadUpPressed = false;
-                dPadRightPressed = false;
-                dPadLeftPressed = false;
-
-            } else if (dPadDown) {
-
-                if (dPadDownPressed && !pastB.motion().equals(DriveMotion.ZERO)) {
-                    pastB = new DriveActionSequence(downMovement);
-                    repeatedPresses++;
-                } else {
-                    pastB = new DriveActionSequence(downMovement);
-                    repeatedPresses = 0;
-                    pastB.reset();
-                }
-                xButtonPressed = false;
-                dPadDownPressed = true;
-                dPadUpPressed = false;
-                dPadRightPressed = false;
-                dPadLeftPressed = false;
-
-            } else if (dPadUp) {
-
-                if (dPadUpPressed && !pastB.motion().equals(DriveMotion.ZERO)){
-                    pastB = new DriveActionSequence(upMovement);
-                    repeatedPresses++;
-                } else {
-                    pastB = new DriveActionSequence(upMovement);
-                    repeatedPresses = 0;
-                    pastB.reset();
-                }
-                xButtonPressed = false;
-                dPadDownPressed = false;
-                dPadUpPressed = true;
-                dPadRightPressed = false;
-                dPadLeftPressed = false;
-
-            } else if (dPadRight) {
-
-                if (dPadRightPressed && !pastB.motion().equals(DriveMotion.ZERO)){
-                    pastB = new DriveActionSequence(rightMovement);
-                    repeatedPresses++;
-                } else {
-                    pastB = new DriveActionSequence(rightMovement);
-                    repeatedPresses = 0;
-                    pastB.reset();
-                }
-                xButtonPressed = false;
-                dPadDownPressed = false;
-                dPadUpPressed = false;
-                dPadRightPressed = true;
-                dPadLeftPressed = false;
-
-            } else if (dPadLeft) {
-
-                if (dPadLeftPressed && !pastB.motion().equals(DriveMotion.ZERO)){
-                    pastB = new DriveActionSequence(leftMovement);
-                    repeatedPresses++;
-                } else {
-                    pastB = new DriveActionSequence(leftMovement);
-                    repeatedPresses = 0;
-                    pastB.reset();
-                }
-                xButtonPressed = false;
-                dPadDownPressed = false;
-                dPadUpPressed = false;
-                dPadRightPressed = false;
-                dPadLeftPressed = true;
-            }
-
-            current_motion = pastB.motion();
-            return current_motion;
-        }
-
+        joystickInterupt(pastB);
+        
         //joystick check
-        if ((gamepad1.left_stick_y > JOYSTICK_THRESHOLD || gamepad1.left_stick_y < -JOYSTICK_THRESHOLD) || (gamepad1.left_stick_x > JOYSTICK_THRESHOLD || gamepad1.left_stick_x < -JOYSTICK_THRESHOLD)) {
-            pastB = null;
-
-            dPadRightPressed = false;
-            dPadLeftPressed = false;
-            dPadDownPressed = false;
-            dPadUpPressed = false;
-            xButtonPressed = false;
-
             if(rightTrigger) {
                 //Check if rotation should be affected by SLOW_MODE_FACTOR
                 current_motion = new DriveMotion(gamepad1.left_stick_y * SLOW_MODE_FACTOR, gamepad1.left_stick_x * SLOW_MODE_FACTOR, gamepad1.right_stick_x * SLOW_MODE_FACTOR);
@@ -210,20 +114,120 @@ public class BasicTeleOpMC extends LinearOpMode {
             current_motion = new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             return current_motion;
 
-
-        }
-
         if(pastB != null) {
-            if(pastB.motion().equals(DriveMotion.ZERO) && repeatedPresses > 0){
+            if(!pastB.motionIsActive() && repeatedPresses > 0){
                 repeatedPresses--;
                 pastB.init();
             }
-
-            current_motion = pastB.motion();
-            return current_motion;
+            
+            return pastB.motion();
         }
 
         return DriveMotion.ZERO;
+    }
+
+    public void joystickInterupt(DriveActionSequence pastButton){
+        if ((gamepad1.left_stick_y > JOYSTICK_THRESHOLD || gamepad1.left_stick_y < -JOYSTICK_THRESHOLD) ||
+            (gamepad1.left_stick_x > JOYSTICK_THRESHOLD || gamepad1.left_stick_x < -JOYSTICK_THRESHOLD)) {
+
+            pastButton = null;
+
+            dPadRightPressed = false;
+            dPadLeftPressed = false;
+            dPadDownPressed = false;
+            dPadUpPressed = false;
+            xButtonPressed = false;
+        }
+    }
+
+    public void buttonInputs(DriveActionSequence pastButton){
+        boolean dPadDown = gamepad1.dpadDownWasPressed();
+        boolean dPadLeft = gamepad1.dpadLeftWasPressed();
+        boolean dPadRight = gamepad1.dpadRightWasPressed();
+        boolean dPadUp = gamepad1.dpadUpWasPressed();
+        boolean xButton = gamepad1.xWasPressed();
+
+        if (xButton) {
+
+            if (xButtonPressed && pastButton.motionIsActive()) {
+                pastButton = new DriveActionSequence(xButtonMovement);
+                repeatedPresses++;
+            } else {
+                pastButton = new DriveActionSequence(xButtonMovement);
+                repeatedPresses = 0;
+                pastButton.init();
+
+            }
+            xButtonPressed = true;
+            dPadDownPressed = false;
+            dPadUpPressed = false;
+            dPadRightPressed = false;
+            dPadLeftPressed = false;
+
+        } else if (dPadDown) {
+
+            if (dPadDownPressed && pastButton.motionIsActive()) {
+                pastButton = new DriveActionSequence(downMovement);
+                repeatedPresses++;
+            } else {
+                pastButton = new DriveActionSequence(downMovement);
+                repeatedPresses = 0;
+                pastButton.init();
+            }
+            xButtonPressed = false;
+            dPadDownPressed = true;
+            dPadUpPressed = false;
+            dPadRightPressed = false;
+            dPadLeftPressed = false;
+
+        } else if (dPadUp) {
+
+            if (dPadUpPressed && pastButton.motionIsActive()){
+                pastButton = new DriveActionSequence(upMovement);
+                repeatedPresses++;
+            } else {
+                pastButton = new DriveActionSequence(upMovement);
+                repeatedPresses = 0;
+                pastButton.init();
+            }
+            xButtonPressed = false;
+            dPadDownPressed = false;
+            dPadUpPressed = true;
+            dPadRightPressed = false;
+            dPadLeftPressed = false;
+
+        } else if (dPadRight) {
+
+            if (dPadRightPressed && pastButton.motionIsActive()){
+                pastButton = new DriveActionSequence(rightMovement);
+                repeatedPresses++;
+            } else {
+                pastButton = new DriveActionSequence(rightMovement);
+                repeatedPresses = 0;
+                pastButton.init();
+            }
+            xButtonPressed = false;
+            dPadDownPressed = false;
+            dPadUpPressed = false;
+            dPadRightPressed = true;
+            dPadLeftPressed = false;
+
+        } else if (dPadLeft) {
+
+            if (dPadLeftPressed && pastButton.motionIsActive()){
+                pastButton = new DriveActionSequence(leftMovement);
+                repeatedPresses++;
+            } else {
+                pastButton = new DriveActionSequence(leftMovement);
+                repeatedPresses = 0;
+                pastButton.init();
+            }
+            xButtonPressed = false;
+            dPadDownPressed = false;
+            dPadUpPressed = false;
+            dPadRightPressed = false;
+            dPadLeftPressed = true;
+        }
     }
 
     /**

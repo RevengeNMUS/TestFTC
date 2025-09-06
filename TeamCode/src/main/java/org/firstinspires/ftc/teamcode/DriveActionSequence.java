@@ -46,9 +46,8 @@ public class DriveActionSequence {
      *
      * @return DriveMotion The drive motion that should be implemented on the robot
      */
-    public DriveMotion init(){
+    public void init(){
         timer.reset();
-        return motion();
     }
 
     public void reset(){
@@ -64,6 +63,10 @@ public class DriveActionSequence {
             return DriveMotion.ZERO;
         }
         return actions[((int) (timer.milliseconds()/timePerAction)) % actions.length];
+    }
+
+    public boolean motionIsActive(){
+        return !this.motion().equals(DriveMotion.ZERO);
     }
 
     /**
