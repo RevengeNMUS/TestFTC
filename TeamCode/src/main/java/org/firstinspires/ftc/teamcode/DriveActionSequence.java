@@ -11,9 +11,10 @@ public class DriveActionSequence {
     private final int timePerAction;
     private final ElapsedTime timer = new ElapsedTime();
 
-    /** Multi-motion DriveActionSequence constructor
+    /**
+     * Multi-motion DriveActionSequence constructor
      *
-     * @param dms the DriveMotions to be executed by this button
+     * @param dms           the DriveMotions to be executed by this button
      * @param timePerAction the amount of time for each action to complete in milliseconds
      */
     public DriveActionSequence(DriveMotion[] dms, int timePerAction) {
@@ -26,7 +27,7 @@ public class DriveActionSequence {
     /**
      * Copy-Constructor
      */
-    public DriveActionSequence(DriveActionSequence das){
+    public DriveActionSequence(DriveActionSequence das) {
         this.timePerAction = das.timePerAction;
         this.actions = das.actions;
         timer.reset();
@@ -34,7 +35,8 @@ public class DriveActionSequence {
 
     /**
      * Single Motion DriveActionSequence contructor
-     * @param dm the DriveMotion for this input to execute
+     *
+     * @param dm   the DriveMotion for this input to execute
      * @param time the amount of time for this DriveMotion to execute
      */
     public DriveActionSequence(DriveMotion dm, int time) {
@@ -47,41 +49,28 @@ public class DriveActionSequence {
      * Function that should be executed when this button is pressed.
      * It resets the timer of this DAS
      */
-    public void init(){
+    public void init() {
         timer.reset();
     }
 
     /**
      * Checks and gives the motion that this button should contribute to the bot
+     *
      * @return The vector of motion that the bot should implement
      */
     public DriveMotion motion() {
-        if(timer.milliseconds() > timePerAction * actions.length){
+        if (timer.milliseconds() > timePerAction * actions.length) {
             return DriveMotion.ZERO;
         }
-        return actions[((int) (timer.milliseconds()/timePerAction)) % actions.length];
+        return actions[((int) (timer.milliseconds() / timePerAction)) % actions.length];
     }
 
     /**
      * whether this DAS's motion is currently active (if motion() is not zero)
+     *
      * @return whether motion() is ZERO
      */
-    public boolean motionIsActive(){
+    public boolean motionIsActive() {
         return timer.milliseconds() > timePerAction * actions.length;
-    }
-
-    /**
-     * Equals method
-     * @param o object to be compared
-     * @return is equal?
-     */
-    @Override
-    public boolean equals(Object o){
-        if(o != null && o.getClass() == this.getClass()){
-            if(Arrays.equals(((DriveActionSequence) o).actions, (this.actions)) && ((DriveActionSequence) o).timePerAction == this.timePerAction) {
-                return true;
-            }
-        }
-        return false;
     }
 }
