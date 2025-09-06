@@ -67,7 +67,7 @@ public class DriveActionSequence {
      * @return whether motion() is ZERO
      */
     public boolean motionIsActive(){
-        return !this.motion().equals(DriveMotion.ZERO);
+        return timer.milliseconds() > timePerAction * actions.length;
     }
 
     /**
