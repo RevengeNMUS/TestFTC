@@ -25,9 +25,6 @@ public class BasicTeleOpMC extends LinearOpMode {
     //Slow mode factor
     public static final double SLOW_MODE_FACTOR = 0.3;
 
-    //current motion of the robot
-    DriveMotion motion = DriveMotion.ZERO;
-
     //DriveActionSequences to be activated by each button (See DriveActionSequence)
     DriveActionSequence downMovement = new DriveActionSequence(new DriveMotion(-0.5, 0, 0), 1000);
     DriveActionSequence upMovement = new DriveActionSequence(new DriveMotion(0.5, 0, 0), 1000);
@@ -114,7 +111,9 @@ public class BasicTeleOpMC extends LinearOpMode {
 
         if(rightTrigger) {
             //Check if rotation should be affected by SLOW_MODE_FACTOR
-            return new DriveMotion(gamepad1.left_stick_y * SLOW_MODE_FACTOR, gamepad1.left_stick_x * SLOW_MODE_FACTOR, gamepad1.right_stick_x * SLOW_MODE_FACTOR);
+            return new DriveMotion(gamepad1.left_stick_y * SLOW_MODE_FACTOR,
+                                   gamepad1.left_stick_x * SLOW_MODE_FACTOR,
+                                   gamepad1.right_stick_x * SLOW_MODE_FACTOR);
         }
         return new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
     }
