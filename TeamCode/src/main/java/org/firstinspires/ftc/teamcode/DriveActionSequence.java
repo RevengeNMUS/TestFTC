@@ -42,15 +42,9 @@ public class DriveActionSequence {
 
     /**
      * Function that should be executed when this button is pressed.
-     * (Possibly phase out return as you can just use motion())
      *
-     * @return DriveMotion The drive motion that should be implemented on the robot
      */
     public void init(){
-        timer.reset();
-    }
-
-    public void reset(){
         timer.reset();
     }
 
@@ -65,6 +59,10 @@ public class DriveActionSequence {
         return actions[((int) (timer.milliseconds()/timePerAction)) % actions.length];
     }
 
+    /**
+     * whether this DAS's motion is currently active (if motion() is not zero)
+     * @return whether motion() is ZERO
+     */
     public boolean motionIsActive(){
         return !this.motion().equals(DriveMotion.ZERO);
     }
