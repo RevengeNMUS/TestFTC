@@ -20,12 +20,4 @@ public class DriveMotion {
         strafe = s;
         rotate = r;
     }
-
-    @Override
-    public boolean equals(Object o){
-        if(o != null && o.getClass() == this.getClass()){
-            return ((DriveMotion)o).drive == this.drive && ((DriveMotion)o).strafe == this.strafe && ((DriveMotion)o).rotate == this.rotate;
-        }
-        return false;
-    }
 }
