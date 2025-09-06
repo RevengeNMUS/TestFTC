@@ -10,10 +10,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * Allows stacking of DPad input
  *
  * To-Do:
- * Debuging (get android studio fixed) and General Polishing
  * More descriptive description (¯\_(ツ)_/¯)
- * Make sure you didnt goof on any of the code you bagel
- * Add more comments cro
+ * Make sure you didnt goof on any of the code you crouton
+ * Add more comments cro 💔
  *
  */
 @TeleOp(name = "BasicMotionController", group = "idk")
@@ -70,23 +69,19 @@ public class BasicTeleOpMC extends LinearOpMode {
         }
     }
 
+    /**
+     * Repeatedly called when the OpMode is started.
+     */
     public void run(){
         updateDrivetrain(inputCheck(pastButton));
     }
 
     /**
-     * Check Input
-     * (vars currentMotion and motion ARE unneeded, but might be useful in the future, so I havent phased it out.)
+     * Checks input and returns the DriveMotion that the robot should be
+     * affected by.
      *
      * @param pastB The last button pressed
-     *
-     * Input Prefrence:
-     * DriveActionSequence - Top Priority, if DriveActionSequence is pressed then all other input is not considered
-     * Joystick - Second Priority
-     * Previous DriveActionSequence Press - Third Priority
-     * Nothing - Causes Robot to stop motion
-     *
-     *
+     * @return DM that should affect the robot
      */
     public DriveMotion inputCheck(DriveActionSequence pastB){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
@@ -105,6 +100,11 @@ public class BasicTeleOpMC extends LinearOpMode {
         }
     }
 
+    /**
+     * Handles input using joysticks, and uses those inputs to make a DriveMotion
+     * to move the robot by.
+     * @return the DriveMotion
+     */
     public DriveMotion joyStickInput(){
         boolean rightTrigger = gamepad1.right_trigger > TRIGGER_THRESHOLD;
 
@@ -117,6 +117,11 @@ public class BasicTeleOpMC extends LinearOpMode {
         return new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
     }
 
+    /**
+     * Handles a motion caused by a previously pressed button
+     * that has motion that has not ended yet.
+     * @param pastButton the last button pressed (overwritten)
+     */
     public void handlePastButtonPress(DriveActionSequence pastButton){
         if(pastButton != null) {
             if(!pastButton.motionIsActive() && repeatedPresses > 0){
@@ -126,6 +131,11 @@ public class BasicTeleOpMC extends LinearOpMode {
         }
     }
 
+    /**
+     * Handles overwriting button input (past or present) in favor
+     * of joystick input
+     * @param pastButton last button pressed
+     */
     public void joystickInterupt(DriveActionSequence pastButton){
         if ((gamepad1.left_stick_y > JOYSTICK_THRESHOLD || gamepad1.left_stick_y < -JOYSTICK_THRESHOLD) ||
             (gamepad1.left_stick_x > JOYSTICK_THRESHOLD || gamepad1.left_stick_x < -JOYSTICK_THRESHOLD)) {
@@ -140,6 +150,10 @@ public class BasicTeleOpMC extends LinearOpMode {
         }
     }
 
+    /**
+     * Handles all button inputs
+     * @param pastButton last button pressed
+     */
     public void buttonInputs(DriveActionSequence pastButton){
         boolean dPadDown = gamepad1.dpadDownWasPressed();
         boolean dPadLeft = gamepad1.dpadLeftWasPressed();
@@ -231,9 +245,9 @@ public class BasicTeleOpMC extends LinearOpMode {
     }
 
     /**
-     * Used to move the robot based on given DSR
+     * Used to move the robot's drivetrain based on given DriveMotion
      *
-     * @param dsr the drive strafe rotation for movement
+     * @param dsr the DriveMotion for movement
      */
     public void updateDrivetrain(DriveMotion dsr){
         frontLeft.setPower(dsr.drive - dsr.strafe + dsr.rotate);
