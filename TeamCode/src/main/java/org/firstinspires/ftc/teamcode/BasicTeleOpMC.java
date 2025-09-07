@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /**
  * Basic Motion Controller
@@ -23,8 +24,6 @@ public class BasicTeleOpMC extends LinearOpMode {
     public static final double TRIGGER_THRESHOLD = 0.2;
     //Slow mode factor
     public static final double SLOW_MODE_FACTOR = 0.3;
-
-    Buttons buttons = new Buttons(gamepad1);
 
     //DriveActionSequences to be activated by each button (See DriveActionSequence)
     DriveActionSequence backwardsMotion = new DriveActionSequence(new DriveMotion(-0.5, 0, 0), 1000);
@@ -58,11 +57,15 @@ public class BasicTeleOpMC extends LinearOpMode {
         backLeft = hardwareMap.get(DcMotor.class, "back_left_drive");
         backRight = hardwareMap.get(DcMotor.class, "back_right_drive");
 
+        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
 
         waitForStart();
 
@@ -74,28 +77,26 @@ public class BasicTeleOpMC extends LinearOpMode {
     /**
      * Repeatedly called when the OpMode is started.
      */
-    public void run(){
-        updateDrivetrain(inputCheck(pastButton));
+    public void run() {
+        updateDrivetrain(inputCheck());
     }
 
     /**
      * Checks input and returns the DriveMotion that the robot should be
      * affected by.
      *
-     * @param pastB The last button pressed
      * @return DM that should affect the robot
      */
-    public DriveMotion inputCheck(DriveActionSequence pastB){
+    public DriveMotion inputCheck(){
         //assume that gamepad presses take priority if both the gamepad is pressed and the joystick is moved
         //assuming you cant turn during movement using dpad
-
-        handlePastButtonPress(pastB);
-        buttonInputs(pastB);
-        joystickInterrupt(pastB);
+        handlePastButtonPress();
+        buttonInputs();
+        joystickInterrupt();
 
         //not joystick interrupt
-        if(pastB != null){
-            return pastB.motion();
+        if(pastButton != null){
+            return pastButton.motion();
         } else {
             //yes joystick interrupt
             return joyStickInput();
@@ -112,61 +113,71 @@ public class BasicTeleOpMC extends LinearOpMode {
 
         if(rightTrigger) {
             //Check if rotation should be affected by SLOW_MODE_FACTOR
-            return new DriveMotion(gamepad1.left_stick_y * SLOW_MODE_FACTOR,
+            return new DriveMotion(-gamepad1.left_stick_y * SLOW_MODE_FACTOR,
                                    gamepad1.left_stick_x * SLOW_MODE_FACTOR,
                                    gamepad1.right_stick_x * SLOW_MODE_FACTOR);
         }
-        return new DriveMotion(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        return new DriveMotion(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
     }
 
     /**
      * Handles a motion caused by a previously pressed button
      * that has motion that has not ended yet.
-     * @param pastButton the last button pressed (overwritten)
      */
-    public void handlePastButtonPress(DriveActionSequence pastButton){
-        if(pastButton != null) {
-            if(!pastButton.motionIsActive() && repeatedPresses > 0){
-                repeatedPresses--;
+    public void handlePastButtonPress(){
+        if(pastButton == null)
+            return;
+
+        if(!pastButton.motionIsActive()){
+            if(repeatedPresses > 0) {
                 pastButton.init();
+                repeatedPresses--;
+            } else {
+                reset();
             }
         }
+    }
+
+
+    public void reset(){
+        pastButton = null;
+
+        dPadRightLastPressed = false;
+        dPadLeftLastPressed = false;
+        dPadDownLastPressed = false;
+        dPadUpLastPressed = false;
+        xButtonLastPressed = false;
+
+        repeatedPresses = 0;
     }
 
     /**
      * Handles overwriting button input (past or present) in favor
      * of joystick input
-     * @param pastButton last button pressed
      */
-    public void joystickInterrupt(DriveActionSequence pastButton){
-        if ((gamepad1.left_stick_y > JOYSTICK_THRESHOLD || gamepad1.left_stick_y < -JOYSTICK_THRESHOLD) ||
-            (gamepad1.left_stick_x > JOYSTICK_THRESHOLD || gamepad1.left_stick_x < -JOYSTICK_THRESHOLD)) {
-
-            pastButton = null;
-
-            dPadRightLastPressed = false;
-            dPadLeftLastPressed = false;
-            dPadDownLastPressed = false;
-            dPadUpLastPressed = false;
-            xButtonLastPressed = false;
+    public void joystickInterrupt(){
+        if (
+            (Math.abs(gamepad1.left_stick_y) > JOYSTICK_THRESHOLD)
+            || (Math.abs(gamepad1.left_stick_x) > JOYSTICK_THRESHOLD)
+            || (Math.abs(gamepad1.right_stick_x) > JOYSTICK_THRESHOLD)
+        ) {
+            reset();
         }
     }
 
     /**
      * Handles all button inputs
-     * @param pastButton last button pressed
      */
-    public void buttonInputs(DriveActionSequence pastButton){
-        boolean dPadDown = buttons.dpaddownWasPressed();
-        boolean dPadLeft = buttons.dpadleftWasPressed();
-        boolean dPadRight = buttons.dpadrightWasPressed();
-        boolean dPadUp = buttons.dpadupWasPressed();
-        boolean xButton = buttons.xWasPressed();
+    public void buttonInputs(){
+        boolean dPadDown = gamepad1.dpadDownWasPressed();
+        boolean dPadLeft = gamepad1.dpadLeftWasPressed();
+        boolean dPadRight = gamepad1.dpadRightWasPressed();
+        boolean dPadUp = gamepad1.dpadUpWasPressed();
+        boolean xButton = gamepad1.xWasPressed();
 
         if (xButton) {
 
-            if (xButtonLastPressed && pastButton.motionIsActive()) {
-                pastButton = new DriveActionSequence(forwardTurnMotion);
+            if (xButtonLastPressed && pastButton != null && pastButton.motionIsActive()) {
                 repeatedPresses++;
             } else {
                 pastButton = new DriveActionSequence(forwardTurnMotion);
@@ -183,8 +194,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
         } else if (dPadDown) {
 
-            if (dPadDownLastPressed && pastButton.motionIsActive()) {
-                pastButton = new DriveActionSequence(backwardsMotion);
+            if (dPadDownLastPressed && pastButton != null && pastButton.motionIsActive()) {
                 repeatedPresses++;
             } else {
                 pastButton = new DriveActionSequence(backwardsMotion);
@@ -199,8 +209,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
         } else if (dPadUp) {
 
-            if (dPadUpLastPressed && pastButton.motionIsActive()){
-                pastButton = new DriveActionSequence(upMotion);
+            if (dPadUpLastPressed && pastButton != null && pastButton.motionIsActive()){
                 repeatedPresses++;
             } else {
                 pastButton = new DriveActionSequence(upMotion);
@@ -215,8 +224,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
         } else if (dPadRight) {
 
-            if (dPadRightLastPressed && pastButton.motionIsActive()){
-                pastButton = new DriveActionSequence(rightMotion);
+            if (dPadRightLastPressed && pastButton != null && pastButton.motionIsActive()){
                 repeatedPresses++;
             } else {
                 pastButton = new DriveActionSequence(rightMotion);
@@ -231,8 +239,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
         } else if (dPadLeft) {
 
-            if (dPadLeftLastPressed && pastButton.motionIsActive()){
-                pastButton = new DriveActionSequence(leftMotion);
+            if (dPadLeftLastPressed && pastButton != null && pastButton.motionIsActive()){
                 repeatedPresses++;
             } else {
                 pastButton = new DriveActionSequence(leftMotion);
@@ -253,9 +260,9 @@ public class BasicTeleOpMC extends LinearOpMode {
      * @param dsr the DriveMotion for movement
      */
     public void updateDrivetrain(DriveMotion dsr){
-        frontLeft.setPower(dsr.drive - dsr.strafe + dsr.rotate);
-        frontRight.setPower(dsr.drive + dsr.strafe - dsr.rotate);
-        backLeft.setPower(dsr.drive + dsr.strafe + dsr.rotate);
-        backRight.setPower(dsr.drive - dsr.strafe - dsr.rotate);
+        frontLeft.setPower(dsr.drive + dsr.strafe + dsr.rotate);
+        frontRight.setPower(dsr.drive - dsr.strafe - dsr.rotate);
+        backLeft.setPower(dsr.drive - dsr.strafe + dsr.rotate);
+        backRight.setPower(dsr.drive + dsr.strafe - dsr.rotate);
     }
 }
