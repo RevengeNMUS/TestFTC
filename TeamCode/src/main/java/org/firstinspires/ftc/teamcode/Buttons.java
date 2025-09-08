@@ -3,87 +3,39 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class Buttons {
-    Gamepad gp_master;
-    Gamepad gp_current;
-    Gamepad gp_copy;
+    Gamepad masterGP;
+    Gamepad currentGP;
+    Gamepad previousGP;
 
-    public boolean xButtonLastPressed = false;
-    public boolean dPadDownLastPressed = false;
-    public boolean dPadUpLastPressed = false;
-    public boolean dPadRightLastPressed = false;
-    public boolean dPadLeftLastPressed = false;
-
-    public void buttonsReset(){
-        dPadLeftLastPressed = false;
-        xButtonLastPressed = false;
-        dPadDownLastPressed = false;
-        dPadUpLastPressed = false;
-        dPadRightLastPressed = false;
-    }
-
-    public Buttons (Gamepad gamepad){
-        gp_master = gamepad;
-        gp_current = gamepad;
-        gp_copy = gamepad;
+    public Buttons(Gamepad gamepad) {
+        masterGP = gamepad;
+        currentGP = new Gamepad();
+        previousGP = new Gamepad();
         update();
     }
 
-    public void update(){
-        gp_copy.copy(gp_current);
-        gp_current.copy(gp_master);
+    public void update() {
+        previousGP.copy(currentGP);
+        currentGP.copy(masterGP);
     }
 
-
-    public boolean xWasPressed(){
-
-        xButtonLastPressed = true;
-        dPadDownLastPressed = false;
-        dPadUpLastPressed = false;
-        dPadRightLastPressed = false;
-        dPadLeftLastPressed = false;
-
-        return !gp_copy.x && gp_current.x;
+    public boolean xWasPressed() {
+        return currentGP.x && !previousGP.x;
     }
 
-    public boolean dpaddownWasPressed(){
-
-        xButtonLastPressed = false;
-        dPadDownLastPressed = true;
-        dPadUpLastPressed = false;
-        dPadRightLastPressed = false;
-        dPadLeftLastPressed = false;
-
-        return !gp_copy.dpad_down && gp_current.dpad_down;
-    }
-    public boolean dpadupWasPressed(){
-
-        xButtonLastPressed = false;
-        dPadDownLastPressed = false;
-        dPadUpLastPressed = true;
-        dPadRightLastPressed = false;
-        dPadLeftLastPressed = false;
-
-        return !gp_copy.dpad_up && gp_current.dpad_up;
-    }
-    public boolean dpadrightWasPressed(){
-
-        xButtonLastPressed = false;
-        dPadDownLastPressed = false;
-        dPadUpLastPressed = false;
-        dPadRightLastPressed = true;
-        dPadLeftLastPressed = false;
-
-        return !gp_copy.dpad_right && gp_current.dpad_right;
-    }
-    public boolean dpadleftWasPressed(){
-
-        xButtonLastPressed = false;
-        dPadDownLastPressed = false;
-        dPadUpLastPressed = false;
-        dPadRightLastPressed = false;
-        dPadLeftLastPressed = true;
-
-        return !gp_copy.dpad_left && gp_current.dpad_left;
+    public boolean dpaddownWasPressed() {
+        return currentGP.dpad_down && !previousGP.dpad_down;
     }
 
+    public boolean dpadupWasPressed() {
+        return currentGP.dpad_up && !previousGP.dpad_up;
+    }
+
+    public boolean dpadrightWasPressed() {
+        return currentGP.dpad_right && !previousGP.dpad_right;
+    }
+
+    public boolean dpadleftWasPressed() {
+        return currentGP.dpad_left && !previousGP.dpad_left;
+    }
 }
