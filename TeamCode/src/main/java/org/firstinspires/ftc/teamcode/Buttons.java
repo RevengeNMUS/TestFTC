@@ -12,6 +12,8 @@ public class Buttons {
         currentGP = new Gamepad();
         previousGP = new Gamepad();
         update();
+        update();
+        update();
     }
 
     public void update() {

@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  */
 @TeleOp(name = "BasicMotionController", group = "idk")
 public class BasicTeleOpMC extends LinearOpMode {
-    //Joystick Threshhold
+    //Joystick Threshold
     public static final double JOYSTICK_THRESHOLD = 0.1;
     //Trigger Threshold
     public static final double TRIGGER_THRESHOLD = 0.2;
@@ -42,7 +42,7 @@ public class BasicTeleOpMC extends LinearOpMode {
     DcMotor backLeft;
     DcMotor backRight;
 
-    Buttons buttons = new Buttons(gamepad1);
+    Buttons buttons;
 
     //Booleans to keep track of the past buttons (Layer purposes)
     boolean xButtonLastPressed = false;
@@ -70,6 +70,8 @@ public class BasicTeleOpMC extends LinearOpMode {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        buttons = new Buttons(gamepad1);
 
         waitForStart();
 
