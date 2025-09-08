@@ -25,6 +25,9 @@ public class BasicTeleOpMC extends LinearOpMode {
     //Slow mode factor
     public static final double SLOW_MODE_FACTOR = 0.3;
 
+    //Buttons
+    Buttons gpadButtons = new Buttons(gamepad1);
+
     //DriveActionSequences to be activated by each button (See DriveActionSequence)
     DriveActionSequence backwardsMotion = new DriveActionSequence(new DriveMotion(-0.5, 0, 0), 1000);
     DriveActionSequence upMotion = new DriveActionSequence(new DriveMotion(0.5, 0, 0), 1000);
@@ -169,13 +172,9 @@ public class BasicTeleOpMC extends LinearOpMode {
      * Handles all button inputs
      */
     public void buttonInputs(){
-        boolean dPadDown = gamepad1.dpadDownWasPressed();
-        boolean dPadLeft = gamepad1.dpadLeftWasPressed();
-        boolean dPadRight = gamepad1.dpadRightWasPressed();
-        boolean dPadUp = gamepad1.dpadUpWasPressed();
-        boolean xButton = gamepad1.xWasPressed();
+        gpadButtons.update();
 
-        if (xButton) {
+        if (gpadButtons.xWasPressed()) {
 
             if (xButtonLastPressed && pastButton != null && pastButton.motionIsActive()) {
                 repeatedPresses++;
@@ -192,7 +191,7 @@ public class BasicTeleOpMC extends LinearOpMode {
             dPadRightLastPressed = false;
             dPadLeftLastPressed = false;
 
-        } else if (dPadDown) {
+        } else if (gpadButtons.dpaddownWasPressed()) {
 
             if (dPadDownLastPressed && pastButton != null && pastButton.motionIsActive()) {
                 repeatedPresses++;
@@ -207,7 +206,7 @@ public class BasicTeleOpMC extends LinearOpMode {
             dPadRightLastPressed = false;
             dPadLeftLastPressed = false;
 
-        } else if (dPadUp) {
+        } else if (gpadButtons.dpadupWasPressed()) {
 
             if (dPadUpLastPressed && pastButton != null && pastButton.motionIsActive()){
                 repeatedPresses++;
@@ -216,13 +215,14 @@ public class BasicTeleOpMC extends LinearOpMode {
                 repeatedPresses = 0;
                 pastButton.init();
             }
+
             xButtonLastPressed = false;
             dPadDownLastPressed = false;
             dPadUpLastPressed = true;
             dPadRightLastPressed = false;
             dPadLeftLastPressed = false;
 
-        } else if (dPadRight) {
+        } else if (gpadButtons.dpadrightWasPressed()) {
 
             if (dPadRightLastPressed && pastButton != null && pastButton.motionIsActive()){
                 repeatedPresses++;
@@ -237,7 +237,7 @@ public class BasicTeleOpMC extends LinearOpMode {
             dPadRightLastPressed = true;
             dPadLeftLastPressed = false;
 
-        } else if (dPadLeft) {
+        } else if (gpadButtons.dpadleftWasPressed()) {
 
             if (dPadLeftLastPressed && pastButton != null && pastButton.motionIsActive()){
                 repeatedPresses++;

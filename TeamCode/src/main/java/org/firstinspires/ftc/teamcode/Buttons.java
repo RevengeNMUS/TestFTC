@@ -3,96 +3,37 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class Buttons {
-    Gamepad gp;
-    boolean x;
-    boolean y;
-    boolean b;
-    boolean a;
-    boolean dpaddown;
-    boolean dpadup;
-    boolean dpadright;
-    boolean dpadleft;
+    Gamepad gp_master;
+    Gamepad gp_current;
+    Gamepad gp_copy;
 
     public Buttons (Gamepad gamepad){
-        gp = gamepad;
+        gp_master = gamepad;
+        gp_current = gamepad;
+        gp_copy = gamepad;
         update();
     }
 
     public void update(){
-        y = gp.y;
-        x = gp.x;
-        a = gp.a;
-        b = gp.b;
-        dpaddown = gp.dpad_down;
-        dpadup = gp.dpad_up;
-        dpadleft = gp.dpad_left;
-        dpadright = gp.dpad_right;
+        gp_copy.copy(gp_current);
+        gp_current.copy(gp_master);
     }
 
     public boolean xWasPressed(){
-        if(x != gp.x){
-            update();
-            return true;
-        } else {
-            return false;
-        }
+        return !gp_copy.x && gp_current.x;
     }
 
-    public boolean yWasPressed(){
-        if(y != gp.y){
-            update();
-            return true;
-        } else {
-            return false;
-        }
-    }
-    public boolean aWasPressed(){
-        if(a != gp.a){
-            update();
-            return true;
-        } else {
-            return false;
-        }
-    }
-    public boolean bWasPressed(){
-        if(b != gp.b){
-            update();
-            return true;
-        } else {
-            return false;
-        }
-    }
     public boolean dpaddownWasPressed(){
-        if(dpaddown != gp.dpad_down){
-            update();
-            return true;
-        } else {
-            return false;
-        }
+        return !gp_copy.dpad_down && gp_current.dpad_down;
     }
     public boolean dpadupWasPressed(){
-        if(dpadup != gp.dpad_up){
-            update();
-            return true;
-        } else {
-            return false;
-        }
+        return !gp_copy.dpad_up && gp_current.dpad_up;
     }
     public boolean dpadrightWasPressed(){
-        if(dpadright != gp.dpad_right){
-            update();
-            return true;
-        } else {
-            return false;
-        }
+        return !gp_copy.dpad_right && gp_current.dpad_right;
     }
     public boolean dpadleftWasPressed(){
-        if(dpadleft != gp.dpad_left){
-            update();
-            return true;
-        } else {
-            return false;
-        }
+        return !gp_copy.dpad_left && gp_current.dpad_left;
     }
 
 }
