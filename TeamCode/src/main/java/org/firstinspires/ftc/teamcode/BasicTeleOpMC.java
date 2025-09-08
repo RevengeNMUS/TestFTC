@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  */
 @TeleOp(name = "BasicMotionController", group = "idk")
 public class BasicTeleOpMC extends LinearOpMode {
+
     //Joystick Threshhold
     public static final double JOYSTICK_THRESHOLD = 0.1;
     //Trigger Threshold
@@ -42,13 +43,6 @@ public class BasicTeleOpMC extends LinearOpMode {
     DcMotor frontRight;
     DcMotor backLeft;
     DcMotor backRight;
-
-    //Booleans to keep track of the past buttons (Layer purposes)
-    boolean xButtonLastPressed = false;
-    boolean dPadDownLastPressed = false;
-    boolean dPadUpLastPressed = false;
-    boolean dPadRightLastPressed = false;
-    boolean dPadLeftLastPressed = false;
 
     //Amount of times that button presses have been layered
     private int repeatedPresses = 0;
@@ -144,13 +138,7 @@ public class BasicTeleOpMC extends LinearOpMode {
 
     public void reset(){
         pastButton = null;
-
-        dPadRightLastPressed = false;
-        dPadLeftLastPressed = false;
-        dPadDownLastPressed = false;
-        dPadUpLastPressed = false;
-        xButtonLastPressed = false;
-
+        gpadButtons.buttonsReset();
         repeatedPresses = 0;
     }
 
@@ -176,39 +164,27 @@ public class BasicTeleOpMC extends LinearOpMode {
 
         if (gpadButtons.xWasPressed()) {
 
-            if (xButtonLastPressed && pastButton != null && pastButton.motionIsActive()) {
+            if (gpadButtons.xButtonLastPressed && pastButton != null && pastButton.motionIsActive()) {
                 repeatedPresses++;
             } else {
                 pastButton = new DriveActionSequence(forwardTurnMotion);
                 repeatedPresses = 0;
                 pastButton.init();
-
             }
-
-            xButtonLastPressed = true;
-            dPadDownLastPressed = false;
-            dPadUpLastPressed = false;
-            dPadRightLastPressed = false;
-            dPadLeftLastPressed = false;
 
         } else if (gpadButtons.dpaddownWasPressed()) {
 
-            if (dPadDownLastPressed && pastButton != null && pastButton.motionIsActive()) {
+            if (gpadButtons.dPadDownLastPressed && pastButton != null && pastButton.motionIsActive()) {
                 repeatedPresses++;
             } else {
                 pastButton = new DriveActionSequence(backwardsMotion);
                 repeatedPresses = 0;
                 pastButton.init();
             }
-            xButtonLastPressed = false;
-            dPadDownLastPressed = true;
-            dPadUpLastPressed = false;
-            dPadRightLastPressed = false;
-            dPadLeftLastPressed = false;
 
         } else if (gpadButtons.dpadupWasPressed()) {
 
-            if (dPadUpLastPressed && pastButton != null && pastButton.motionIsActive()){
+            if (gpadButtons.dPadUpLastPressed && pastButton != null && pastButton.motionIsActive()){
                 repeatedPresses++;
             } else {
                 pastButton = new DriveActionSequence(upMotion);
@@ -216,41 +192,25 @@ public class BasicTeleOpMC extends LinearOpMode {
                 pastButton.init();
             }
 
-            xButtonLastPressed = false;
-            dPadDownLastPressed = false;
-            dPadUpLastPressed = true;
-            dPadRightLastPressed = false;
-            dPadLeftLastPressed = false;
-
         } else if (gpadButtons.dpadrightWasPressed()) {
 
-            if (dPadRightLastPressed && pastButton != null && pastButton.motionIsActive()){
+            if (gpadButtons.dPadRightLastPressed && pastButton != null && pastButton.motionIsActive()){
                 repeatedPresses++;
             } else {
                 pastButton = new DriveActionSequence(rightMotion);
                 repeatedPresses = 0;
                 pastButton.init();
             }
-            xButtonLastPressed = false;
-            dPadDownLastPressed = false;
-            dPadUpLastPressed = false;
-            dPadRightLastPressed = true;
-            dPadLeftLastPressed = false;
 
         } else if (gpadButtons.dpadleftWasPressed()) {
 
-            if (dPadLeftLastPressed && pastButton != null && pastButton.motionIsActive()){
+            if (gpadButtons.dPadLeftLastPressed && pastButton != null && pastButton.motionIsActive()){
                 repeatedPresses++;
             } else {
                 pastButton = new DriveActionSequence(leftMotion);
                 repeatedPresses = 0;
                 pastButton.init();
             }
-            xButtonLastPressed = false;
-            dPadDownLastPressed = false;
-            dPadUpLastPressed = false;
-            dPadRightLastPressed = false;
-            dPadLeftLastPressed = true;
         }
     }
 
