@@ -23,6 +23,7 @@ public class BasicTeleOpMC extends LinearOpMode {
     //Trigger Threshold
     public static final double TRIGGER_THRESHOLD = 0.2;
     //Slow mode factor
+
     public static final double SLOW_MODE_FACTOR = 0.3;
 
     //DriveActionSequences to be activated by each button (See DriveActionSequence)
