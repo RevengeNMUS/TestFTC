@@ -3,7 +3,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.Predicate;
+import java.util.function.Predicate;
+
 
 public enum Button {
 
