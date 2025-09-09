@@ -6,15 +6,15 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Predicate;
 
 public enum Button {
+
     X(gamepad -> gamepad.x),
-    DPADDOWN(gamepad -> gamepad.dpad_down),
-    DPADUP(gamepad -> gamepad.dpad_up),
-    DPADRIGHT(gamepad -> gamepad.dpad_right),
-    DPADLEFT(gamepad -> gamepad.dpad_left),
-    RIGHTTRIGGER(gamepad -> gamepad.right_trigger > Constants.TRIGGER_THRESHOLD);
+    DPAD_DOWN(gamepad -> gamepad.dpad_down),
+    DPAD_UP(gamepad -> gamepad.dpad_up),
+    DPAD_RIGHT(gamepad -> gamepad.dpad_right),
+    DPAD_LEFT(gamepad -> gamepad.dpad_left),
+    RIGHT_TRIGGER(gamepad -> gamepad.right_trigger > 0.2);
 
-
-    //think of name later
+    //todo: think of name later
     final Predicate<Gamepad> something;
     private Button(Predicate<Gamepad> smth){
         something = smth;

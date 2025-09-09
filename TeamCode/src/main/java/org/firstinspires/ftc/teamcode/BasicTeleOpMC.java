@@ -18,6 +18,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp(name = "BasicMotionController", group = "idk")
 public class BasicTeleOpMC extends LinearOpMode {
 
+    public static final double JOYSTICK_THRESHOLD = 0.1;
+    //Slow mode factor
+    public static final double SLOW_MODE_FACTOR = 0.3;
 
     //DriveActionSequences to be activated by each button (See DriveActionSequence)
     DriveActionSequence backwardsMotion = new DriveActionSequence(new DriveMotion(-0.5, 0, 0), 1000);
@@ -109,11 +112,11 @@ public class BasicTeleOpMC extends LinearOpMode {
      * @return the DriveMotion
      */
     public DriveMotion joyStickInput(){
-        if(buttons.wasPressed(Button.RIGHTTRIGGER)) {
+        if(buttons.wasPressed(Button.RIGHT_TRIGGER)) {
             //Check if rotation should be affected by SLOW_MODE_FACTOR
-            return new DriveMotion(-gamepad1.left_stick_y * Constants.SLOW_MODE_FACTOR,
-                                   gamepad1.left_stick_x * Constants.SLOW_MODE_FACTOR,
-                                   gamepad1.right_stick_x * Constants.SLOW_MODE_FACTOR);
+            return new DriveMotion(-gamepad1.left_stick_y * SLOW_MODE_FACTOR,
+                                   gamepad1.left_stick_x * SLOW_MODE_FACTOR,
+                                   gamepad1.right_stick_x * SLOW_MODE_FACTOR);
         }
         return new DriveMotion(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
     }
@@ -155,9 +158,9 @@ public class BasicTeleOpMC extends LinearOpMode {
      */
     public void joystickInterrupt(){
         if (
-            (Math.abs(gamepad1.left_stick_y) > Constants.JOYSTICK_THRESHOLD)
-            || (Math.abs(gamepad1.left_stick_x) > Constants.JOYSTICK_THRESHOLD)
-            || (Math.abs(gamepad1.right_stick_x) > Constants.JOYSTICK_THRESHOLD)
+            (Math.abs(gamepad1.left_stick_y) > JOYSTICK_THRESHOLD)
+            || (Math.abs(gamepad1.left_stick_x) > JOYSTICK_THRESHOLD)
+            || (Math.abs(gamepad1.right_stick_x) > JOYSTICK_THRESHOLD)
         ) {
             reset();
         }
@@ -185,7 +188,7 @@ public class BasicTeleOpMC extends LinearOpMode {
             lastActionWasRight = false;
             lastActionWasLeft = false;
 
-        } else if (buttons.wasPressed(Button.DPADDOWN)) {
+        } else if (buttons.wasPressed(Button.DPAD_DOWN)) {
 
             if (lastActionWasBackwards && lastAction != null && lastAction.motionIsActive()) {
                 repeatedPresses++;
@@ -200,7 +203,7 @@ public class BasicTeleOpMC extends LinearOpMode {
             lastActionWasRight = false;
             lastActionWasLeft = false;
 
-        } else if (buttons.wasPressed(Button.DPADUP)) {
+        } else if (buttons.wasPressed(Button.DPAD_UP)) {
 
             if (lastActionWasForwards && lastAction != null && lastAction.motionIsActive()){
                 repeatedPresses++;
@@ -215,7 +218,7 @@ public class BasicTeleOpMC extends LinearOpMode {
             lastActionWasRight = false;
             lastActionWasLeft = false;
 
-        } else if (buttons.wasPressed(Button.DPADRIGHT)) {
+        } else if (buttons.wasPressed(Button.DPAD_RIGHT)) {
 
             if (lastActionWasRight && lastAction != null && lastAction.motionIsActive()){
                 repeatedPresses++;
@@ -230,7 +233,7 @@ public class BasicTeleOpMC extends LinearOpMode {
             lastActionWasRight = true;
             lastActionWasLeft = false;
 
-        } else if (buttons.wasPressed(Button.DPADLEFT)) {
+        } else if (buttons.wasPressed(Button.DPAD_LEFT)) {
 
             if (lastActionWasLeft && lastAction != null && lastAction.motionIsActive()){
                 repeatedPresses++;
