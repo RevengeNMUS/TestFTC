@@ -28,7 +28,7 @@ public class BasicTeleOpMC extends LinearOpMode {
     DriveActionSequence forwardTurnMotion = new DriveActionSequence(new DriveMotion[]{new DriveMotion(0.5, 0, 0), new DriveMotion(0, 0, -0.5)}, 1000);
 
     //Keeps track of the last button pressed (for continuing motion, and helping with layering)
-    DriveActionSequence pastButton = null;
+    DriveActionSequence lastAction = null;
 
 
     //Motors
@@ -40,11 +40,11 @@ public class BasicTeleOpMC extends LinearOpMode {
     GamepadButtonInputs buttons;
 
     //Booleans to keep track of the past buttons (Layer purposes)
-    boolean xButtonLastPressed = false;
-    boolean dPadDownLastPressed = false;
-    boolean dPadUpLastPressed = false;
-    boolean dPadRightLastPressed = false;
-    boolean dPadLeftLastPressed = false;
+    boolean lastActionWasDance = false;
+    boolean lastActionWasBackwards = false;
+    boolean lastActionWasForwards = false;
+    boolean lastActionWasRight = false;
+    boolean lastActionWasLeft = false;
 
     //Amount of times that button presses have been layered
     private int repeatedPresses = 0;
@@ -96,8 +96,8 @@ public class BasicTeleOpMC extends LinearOpMode {
         joystickInterrupt();
 
         //not joystick interrupt
-        if(pastButton != null){
-            return pastButton.motion();
+        if(lastAction != null){
+            return lastAction.motion();
         } else {
             //yes joystick interrupt
             return joyStickInput();
@@ -124,12 +124,12 @@ public class BasicTeleOpMC extends LinearOpMode {
      * that has motion that has not ended yet.
      */
     public void handlePastButtonPress(){
-        if(pastButton == null)
+        if(lastAction == null)
             return;
 
-        if(!pastButton.motionIsActive()){
+        if(!lastAction.motionIsActive()){
             if(repeatedPresses > 0) {
-                pastButton.init();
+                lastAction.init();
                 repeatedPresses--;
             } else {
                 reset();
@@ -139,13 +139,13 @@ public class BasicTeleOpMC extends LinearOpMode {
 
 
     public void reset(){
-        pastButton = null;
+        lastAction = null;
 
-        dPadRightLastPressed = false;
-        dPadLeftLastPressed = false;
-        dPadDownLastPressed = false;
-        dPadUpLastPressed = false;
-        xButtonLastPressed = false;
+        lastActionWasRight = false;
+        lastActionWasLeft = false;
+        lastActionWasBackwards = false;
+        lastActionWasForwards = false;
+        lastActionWasDance = false;
 
         repeatedPresses = 0;
     }
@@ -171,81 +171,80 @@ public class BasicTeleOpMC extends LinearOpMode {
         buttons.update();
 
         if (buttons.wasPressed(Button.X)) {
-            // todo: rename these variables pertaining to the motion/action, not the buttons
-            if (xButtonLastPressed && pastButton != null && pastButton.motionIsActive()) {
+            if (lastActionWasDance && lastAction != null && lastAction.motionIsActive()) {
                 repeatedPresses++;
             } else {
-                pastButton = new DriveActionSequence(forwardTurnMotion);
+                lastAction = new DriveActionSequence(forwardTurnMotion);
                 repeatedPresses = 0;
-                pastButton.init();
+                lastAction.init();
 
             }
 
-            xButtonLastPressed = true;
-            dPadDownLastPressed = false;
-            dPadUpLastPressed = false;
-            dPadRightLastPressed = false;
-            dPadLeftLastPressed = false;
+            lastActionWasDance = true;
+            lastActionWasBackwards = false;
+            lastActionWasForwards = false;
+            lastActionWasRight = false;
+            lastActionWasLeft = false;
 
         } else if (buttons.wasPressed(Button.DPADDOWN)) {
 
-            if (dPadDownLastPressed && pastButton != null && pastButton.motionIsActive()) {
+            if (lastActionWasBackwards && lastAction != null && lastAction.motionIsActive()) {
                 repeatedPresses++;
             } else {
-                pastButton = new DriveActionSequence(backwardsMotion);
+                lastAction = new DriveActionSequence(backwardsMotion);
                 repeatedPresses = 0;
-                pastButton.init();
+                lastAction.init();
             }
-            xButtonLastPressed = false;
-            dPadDownLastPressed = true;
-            dPadUpLastPressed = false;
-            dPadRightLastPressed = false;
-            dPadLeftLastPressed = false;
+            lastActionWasDance = false;
+            lastActionWasBackwards = true;
+            lastActionWasForwards = false;
+            lastActionWasRight = false;
+            lastActionWasLeft = false;
 
         } else if (buttons.wasPressed(Button.DPADUP)) {
 
-            if (dPadUpLastPressed && pastButton != null && pastButton.motionIsActive()){
+            if (lastActionWasForwards && lastAction != null && lastAction.motionIsActive()){
                 repeatedPresses++;
             } else {
-                pastButton = new DriveActionSequence(upMotion);
+                lastAction = new DriveActionSequence(upMotion);
                 repeatedPresses = 0;
-                pastButton.init();
+                lastAction.init();
             }
-            xButtonLastPressed = false;
-            dPadDownLastPressed = false;
-            dPadUpLastPressed = true;
-            dPadRightLastPressed = false;
-            dPadLeftLastPressed = false;
+            lastActionWasDance = false;
+            lastActionWasBackwards = false;
+            lastActionWasForwards = true;
+            lastActionWasRight = false;
+            lastActionWasLeft = false;
 
         } else if (buttons.wasPressed(Button.DPADRIGHT)) {
 
-            if (dPadRightLastPressed && pastButton != null && pastButton.motionIsActive()){
+            if (lastActionWasRight && lastAction != null && lastAction.motionIsActive()){
                 repeatedPresses++;
             } else {
-                pastButton = new DriveActionSequence(rightMotion);
+                lastAction = new DriveActionSequence(rightMotion);
                 repeatedPresses = 0;
-                pastButton.init();
+                lastAction.init();
             }
-            xButtonLastPressed = false;
-            dPadDownLastPressed = false;
-            dPadUpLastPressed = false;
-            dPadRightLastPressed = true;
-            dPadLeftLastPressed = false;
+            lastActionWasDance = false;
+            lastActionWasBackwards = false;
+            lastActionWasForwards = false;
+            lastActionWasRight = true;
+            lastActionWasLeft = false;
 
         } else if (buttons.wasPressed(Button.DPADLEFT)) {
 
-            if (dPadLeftLastPressed && pastButton != null && pastButton.motionIsActive()){
+            if (lastActionWasLeft && lastAction != null && lastAction.motionIsActive()){
                 repeatedPresses++;
             } else {
-                pastButton = new DriveActionSequence(leftMotion);
+                lastAction = new DriveActionSequence(leftMotion);
                 repeatedPresses = 0;
-                pastButton.init();
+                lastAction.init();
             }
-            xButtonLastPressed = false;
-            dPadDownLastPressed = false;
-            dPadUpLastPressed = false;
-            dPadRightLastPressed = false;
-            dPadLeftLastPressed = true;
+            lastActionWasDance = false;
+            lastActionWasBackwards = false;
+            lastActionWasForwards = false;
+            lastActionWasRight = false;
+            lastActionWasLeft = true;
         }
     }
 
