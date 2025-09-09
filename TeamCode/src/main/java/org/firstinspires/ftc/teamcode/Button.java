@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode;
-
-
 import com.qualcomm.robotcore.hardware.Gamepad;
-
 import java.util.function.Predicate;
-
 
 public enum Button {
 
@@ -15,9 +11,8 @@ public enum Button {
     DPAD_LEFT(gamepad -> gamepad.dpad_left),
     RIGHT_TRIGGER(gamepad -> gamepad.right_trigger > 0.2);
 
-    //todo: think of name later
-    final Predicate<Gamepad> something;
-    private Button(Predicate<Gamepad> smth){
-        something = smth;
+    final Predicate<Gamepad> validator;
+    Button(Predicate<Gamepad> validator){
+        this.validator = validator;
     }
 }

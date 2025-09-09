@@ -22,14 +22,14 @@ public class GamepadButtonInputs {
     }
 
     public boolean wasReleased(Button button){
-        return button.something.test(previousGP) && !button.something.test(currentGP);
+        return button.validator.test(previousGP) && !button.validator.test(currentGP);
     }
 
     public boolean wasHeld(Button button){
-        return button.something.test(previousGP) && button.something.test(currentGP);
+        return button.validator.test(previousGP) && button.validator.test(currentGP);
     }
 
     public boolean wasPressed(Button button){
-        return !button.something.test(previousGP) && button.something.test(currentGP);
+        return !button.validator.test(previousGP) && button.validator.test(currentGP);
     }
 }
