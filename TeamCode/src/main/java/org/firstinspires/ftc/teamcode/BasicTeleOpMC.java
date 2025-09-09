@@ -10,10 +10,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  * Takes Joystick and DPad input, and moves the robot accordingly
  * Allows stacking of DPad input
  *
- * To-Do:
- * More descriptive description (¯\_(ツ)_/¯)
- * Make sure you didnt goof on any of the code you crouton
- * Add more comments cro 💔
+ * todo: More descriptive description (¯\_(ツ)_/¯)
+ * todo: Make sure you didnt goof on any of the code you crouton
+ * todo: Add more comments cro 💔
  *
  */
 @TeleOp(name = "BasicMotionController", group = "idk")
